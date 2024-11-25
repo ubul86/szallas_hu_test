@@ -1,0 +1,1 @@
+# szallas_hu_test

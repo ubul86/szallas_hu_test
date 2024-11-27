@@ -20,13 +20,13 @@ class UpdateCompanyRequest extends FormRequest
 
 
         return [
-            'company_name' => 'required|string|max:255',
-            'company_registration_number' => 'required|string|max:50',
-            'company_foundation_date' => [
+            'name' => 'required|string|max:255',
+            'registration_number' => 'required|string|max:50',
+            'foundation_date' => [
                 'nullable',
                 'date',
                 function ($attribute, $value, $fail) use ($company) {
-                    if ($value && $value !== $company->company_foundation_date) {
+                    if ($value && $value !== $company->foundation_date) {
                         $fail('Company Foundation Date Cant modified.');
                     }
                 }

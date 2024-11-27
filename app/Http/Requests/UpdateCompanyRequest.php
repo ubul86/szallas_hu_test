@@ -21,7 +21,12 @@ class UpdateCompanyRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255',
-            'registration_number' => 'required|string|max:50|unique:companies,registration_number,' . $companyId,
+            'registration_number' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('companies')->ignore($companyId),
+            ],
             'foundation_date' => [
                 'nullable',
                 'date',

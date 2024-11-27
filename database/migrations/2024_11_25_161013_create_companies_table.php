@@ -15,8 +15,8 @@ return new class extends Migration
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255)->index();
-            $table->string('registration_number', 50)->unique();
-            $table->date('foundation_date')->nullable();
+            $table->string('registration_number', 50)->unique()->index();
+            $table->date('foundation_date')->nullable()->index();
             $table->string('activity', 100)->nullable()->index();
             $table->boolean('active')->default(true)->index();
             $table->timestamps();

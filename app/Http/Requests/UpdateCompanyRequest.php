@@ -21,7 +21,7 @@ class UpdateCompanyRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255',
-            'registration_number' => 'required|string|max:50',
+            'registration_number' => 'required|string|max:50|unique:companies,registration_number,'. $companyId,
             'foundation_date' => [
                 'nullable',
                 'date',

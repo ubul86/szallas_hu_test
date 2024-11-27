@@ -228,9 +228,65 @@ Run the Laravel development server:
 php artisan serve
 ```
 
-## Endpoints
+## Optional CLI Commands
 
-Here are the available API endpoints:
+The project includes several optional CLI commands to manage and process company data. These commands can be executed via `php artisan`.
+
+---
+
+### 1. Import Companies from CSV
+
+**Command:**  
+`php artisan import:csv`
+
+**Description:**  
+Imports companies along with their associated addresses, owners, and employees based on the `employees` field in the CSV file.
+
+---
+
+### 2. Foundation Date Paginator
+
+**Command:**  
+`php artisan company:foundation-date-paginator [--page]`
+
+**Description:**  
+Displays all dates since `2001-01-01` with two columns:
+- The first column lists the date.
+- The second column lists the company name if a company was founded on that day, otherwise remains empty.
+
+**Parameters:**
+- `--page`: (Optional) Specifies the page number to list, starting from 1. If not provided, the first page is shown by default.
+
+---
+
+### 3. Foundation Date Paginator with Recursive CTE
+
+**Command:**  
+`php artisan company:foundation-date-paginator-with-recursive-cte [--page]`
+
+**Description:**  
+Similar to the `foundation-date-paginator` command but uses a **recursive CTE** (Common Table Expression) to calculate the results.  
+When using this command, ensure the `cte_max_recursion_depth` is set to a sufficiently high value in the database configuration, especially when running the command in a **Docker** environment.
+
+---
+
+### 4. Generate Pivot Table of Companies by Activity
+
+**Command:**  
+`php artisan company:generate-pivot-companies`
+
+**Description:**  
+Generates an aggregated table where:
+- **Columns** dynamically represent values from the `activity` field of the `companies` table.
+- **Rows** contain the names of companies associated with each activity.
+
+The command invokes and executes a predefined **stored procedure** created through a migration.
+
+---
+
+### Notes
+
+- Ensure the database configurations are properly set for commands involving **CTEs** or **stored procedures**.
 
 ## Testing and Analysis Tools
 
@@ -271,9 +327,9 @@ Note: You might need to update your phpstan.neon configuration if you encounter 
 ### PHPUnit
 
 Unit tests are written using PHPUnit. To run tests, first configure the .env.testing file
-```
 
-- Run the tests:
+Run the tests:
+
 ```bash
 php artisan test
 ```

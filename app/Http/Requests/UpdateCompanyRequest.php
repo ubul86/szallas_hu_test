@@ -15,13 +15,13 @@ class UpdateCompanyRequest extends FormRequest
 
     public function rules(): array
     {
+        /** @var string|int|null $companyId */
         $companyId = $this->route('company');
         $company = Company::findOrFail($companyId);
 
-
         return [
             'name' => 'required|string|max:255',
-            'registration_number' => 'required|string|max:50|unique:companies,registration_number,'. $companyId,
+            'registration_number' => 'required|string|max:50|unique:companies,registration_number,' . $companyId,
             'foundation_date' => [
                 'nullable',
                 'date',

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use Symfony\Component\Console\Helper\Table;
 
 class GetPivotCompanies extends Command
@@ -35,11 +36,14 @@ class GetPivotCompanies extends Command
             return;
         }
 
-        $headers = collect($results[0])->keys()->toArray();
+        $headersCollection = new Collection($results[0]);
+
+        $headers = $headersCollection->keys()->toArray();
 
         $rows = [];
         foreach ($results as $entry) {
-            $rows[] = collect($entry)->values()->toArray();
+            $collectedRow = new Collection($entry);
+            $rows[] = $collectedRow->values()->toArray();
         }
 
         $table = new Table($this->output);

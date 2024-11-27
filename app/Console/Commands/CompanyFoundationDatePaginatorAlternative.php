@@ -59,8 +59,7 @@ class CompanyFoundationDatePaginatorAlternative extends Command
         ",
                 ['perPage' => $perPage, 'offset' => $offset]
             );
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             $this->error('You need to increase the max recursion depth to 10000: SET GLOBAL cte_max_recursion_depth=10000;');
         }
 

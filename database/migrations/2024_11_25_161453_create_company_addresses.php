@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('company_addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('country', 100)->index();
+            $table->string('country', 100)->nullable()->index();
             $table->string('city', 100)->nullable()->index();
             $table->string('zip_code', 20)->nullable()->index();
             $table->string('street_address', 255)->nullable();

@@ -14,9 +14,9 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('company_name', 255)->index();
-            $table->string('company_registration_number', 50)->unique();
-            $table->date('company_foundation_date')->nullable();
+            $table->string('name', 255)->index();
+            $table->string('registration_number', 50)->unique();
+            $table->date('foundation_date')->nullable();
             $table->string('activity', 100)->nullable()->index();
             $table->boolean('active')->default(true)->index();
             $table->timestamps();
@@ -28,9 +28,9 @@ return new class extends Migration
             BEFORE UPDATE ON companies
             FOR EACH ROW
             BEGIN
-                IF OLD.company_foundation_date IS NOT NULL AND NEW.company_foundation_date <> OLD.company_foundation_date THEN
+                IF OLD.foundation_date IS NOT NULL AND NEW.foundation_date <> OLD.foundation_date THEN
                     SIGNAL SQLSTATE "45000"
-                    SET MESSAGE_TEXT = "A company_foundation_date field is not modifiable.";
+                    SET MESSAGE_TEXT = "A foundation_date field is not modifiable.";
                 END IF;
             END;
         ');

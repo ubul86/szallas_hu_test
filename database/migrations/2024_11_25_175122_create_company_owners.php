@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('company_id')->nullable()->constrained()->onDelete('set null');
             $table->string('name', 150)->index();
             $table->boolean('active')->default(true)->index();
-            $table->tinyInteger('order')->default(0);
+            $table->tinyInteger('order')->default(1);
             $table->timestamps();
         });
     }

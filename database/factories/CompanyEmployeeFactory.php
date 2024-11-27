@@ -15,7 +15,6 @@ class CompanyEmployeeFactory extends Factory
         return [
             'name' => $this->faker->name,
             'active' => $this->faker->boolean,
-            'company_id' => Company::factory(),
         ];
     }
 }

@@ -16,7 +16,6 @@ class CompanyOwnerFactory extends Factory
             'name' => $this->faker->name,
             'active' => $this->faker->boolean,
             'order' => $this->faker->randomDigitNotZero(),
-            'company_id' => Company::factory(),
         ];
     }
 }

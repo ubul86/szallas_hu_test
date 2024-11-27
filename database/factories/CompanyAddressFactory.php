@@ -19,7 +19,6 @@ class CompanyAddressFactory extends Factory
             'street_address' => $this->faker->streetAddress,
             'latitude' => $this->faker->latitude,
             'longitude' => $this->faker->longitude,
-            'company_id' => Company::factory(),
         ];
     }
 }

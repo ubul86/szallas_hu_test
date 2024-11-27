@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\CompanyEmployee;
 use App\Repositories\UserRepository;
 use App\Services\CompanyService;
 use Illuminate\Console\Command;
@@ -89,7 +90,9 @@ class ImportCsv extends Command
             ]],
         ];
 
-        $this->companyService->storeWithRelations($dataToSave);
+        $company = $this->companyService->storeWithRelations($dataToSave);
+
+        CompanyEmployee::factory($record->get('employees', 0))->create(['company_id' => $company->id]);
     }
 
     /** @param Collection<string, string> $record */

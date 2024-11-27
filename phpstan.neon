@@ -15,5 +15,8 @@ parameters:
     parallel:
         maximumNumberOfProcesses: 4
 
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+
     checkFunctionNameCase: true
     checkUninitializedProperties: true

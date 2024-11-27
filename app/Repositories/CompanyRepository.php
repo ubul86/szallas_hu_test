@@ -73,4 +73,9 @@ class CompanyRepository implements CompanyRepositoryInterface
             throw new Exception('Failed to delete Company: ' . $e->getMessage());
         }
     }
+
+    public function checkExistsByRegistrationNumber(string $registrationNumber): bool
+    {
+        return Company::where('registration_number', $registrationNumber)->exists();
+    }
 }

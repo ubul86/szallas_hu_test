@@ -16,4 +16,5 @@ interface CompanyRepositoryInterface
     public function store(array $data): Company;
     public function update(int $id, array $data): Company;
     public function destroy(int $id): bool|null;
+    public function checkExistsByRegistrationNumber(string $registrationNumber): bool;
 }

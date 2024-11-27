@@ -93,4 +93,9 @@ class CompanyService
     {
         return $this->companyRepository->show($id);
     }
+
+    public function checkExistsByRegistrationNumber(string $registrationNumber): bool
+    {
+        return $this->companyRepository->checkExistsByRegistrationNumber($registrationNumber);
+    }
 }

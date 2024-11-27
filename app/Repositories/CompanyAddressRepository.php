@@ -7,6 +7,7 @@ use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Exception;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CompanyAddressRepository implements CompanyAddressRepositoryInterface
 {
@@ -18,10 +19,19 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
     {
         $query = CompanyAddress::with('company');
 
+        $collectedFilters = collect($filters);
+
+        if (!$collectedFilters->has('company_id')) {
+            throw new NotFoundHttpException('Company ID must be set!');
+        }
+
+        $query->where('company_id', $collectedFilters->get('company_id'));
+
         $perPage = $filters['itemsPerPage'] ?? 10;
         $page = $filters['page'] ?? 1;
 
         return $query->paginate($perPage, ['*'], 'page', $page);
+
     }
 
     public function show(int $id): CompanyAddress

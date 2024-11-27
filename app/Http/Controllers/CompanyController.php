@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CompanyController extends Controller
 {
@@ -22,16 +23,20 @@ class CompanyController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $models = $this->companyService->index($request->all());
-        return response()->json([
-            'items' => CompanyResource::collection($models->items()),
-            'meta' => [
-                'current_page' => $models->currentPage(),
-                'total_pages' => $models->lastPage(),
-                'total_items' => $models->total(),
-                'items_per_page' => $models->perPage(),
-            ],
-        ]);
+        try {
+            $models = $this->companyService->index($request->all());
+            return response()->json([
+                'items' => CompanyResource::collection($models->items()),
+                'meta' => [
+                    'current_page' => $models->currentPage(),
+                    'total_pages' => $models->lastPage(),
+                    'total_items' => $models->total(),
+                    'items_per_page' => $models->perPage(),
+                ],
+            ]);
+        } catch (NotFoundHttpException $e) {
+            return response()->json(['errors' => $e->getMessage()], 400);
+        }
     }
 
     public function store(StoreCompanyRequest $request): JsonResponse

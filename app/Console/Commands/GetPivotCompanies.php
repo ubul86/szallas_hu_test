@@ -21,7 +21,7 @@ class GetPivotCompanies extends Command
      *
      * @var string
      */
-    protected $description = '';
+    protected $description = 'Generates a dynamic pivot table by transforming distinct activity values into columns, with company names displayed under the corresponding activity columns. The table is grouped by the company name.';
 
     /**
      * Execute the console command.

@@ -92,7 +92,9 @@ class ImportCsv extends Command
 
         $company = $this->companyService->storeWithRelations($dataToSave);
 
-        CompanyEmployee::factory($record->get('employees', 0))->create(['company_id' => $company->id]);
+        $employeesCount = (int) $record->get('employees', 0);
+
+        CompanyEmployee::factory($employeesCount)->create(['company_id' => $company->id]);
     }
 
     /** @param Collection<string, string> $record */

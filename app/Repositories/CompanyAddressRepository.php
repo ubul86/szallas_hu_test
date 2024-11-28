@@ -31,7 +31,6 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         $page = $filters['page'] ?? 1;
 
         return $query->paginate($perPage, ['*'], 'page', $page);
-
     }
 
     public function show(int $id): CompanyAddress

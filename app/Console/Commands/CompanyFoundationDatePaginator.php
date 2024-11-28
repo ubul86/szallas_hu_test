@@ -28,18 +28,18 @@ class CompanyFoundationDatePaginator extends Command
      */
     public function handle(): void
     {
-        $page = (int) $this->option('page');
+        $page = (int) $this->option('page') ?: 1;
         $dateStart = $this->option('date-start');
         $dateEnd = $this->option('date-end');
-        $perPage = $this->option('per-page');
+        $perPage = (int) $this->option('per-page') ?: 50;
 
         $results = DB::select(
             "CALL GenerateDateRangeWithCompanyNames(:dateStart, :dateEnd, :page, :perPage)",
             [
                 'dateStart' => $dateStart ?? '2001-01-01',
                 'dateEnd' => $dateEnd ?? Carbon::now()->format('Y-m-d'),
-                'page' => $page ?? 1,
-                'perPage' => $perPage ?? 50
+                'page' => $page,
+                'perPage' => $perPage
             ]
         );
 

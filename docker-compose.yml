@@ -53,7 +53,9 @@ services:
             - app-network
 
     mysql_test:
-        image: mysql:8.0
+        build:
+            context: ./docker_settings
+            dockerfile: ./Dockerfile_mysql82
         container_name: szallas_hu_mysql_test
         environment:
             MYSQL_ROOT_PASSWORD: test_root

@@ -223,3 +223,244 @@ or an error message:
     "errors": "Company not found: No query results for model [App\\Models\\Company] 1"
 }
 ```
+## 6. Get All Companies Address
+
+**Endpoint:**  
+`GET /api/company-address`
+
+Retrieve all company addresses. This endpoint supports pagination through query parameters.
+
+### Query Parameters
+
+| **Name**          | **Required** | **Type**                                | **Description**                                                 |
+|-------------------|--------------|-----------------------------------------|-----------------------------------------------------------------|
+| `company_id`      | Required     | Integer                                 | Need to specific the company from which we want to retrieve the company_address  |
+| `itemsPerPage`    | Optional     | Integer                                 | Number of companies per page for pagination (default: 10).      |
+| `page`            | Optional     | Integer                                 | The page number to retrieve (default: 1).                       |
+
+
+#### Response Example
+
+```json
+{
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "items": [
+            {
+                "id": 3,
+                "company_id": 3,
+                "country": "Western Sahara",
+                "city": "Lagundo/Algund",
+                "zip_code": "442580",
+                "street_address": "P.O. Box 857, 1455 Nullam Street",
+                "latitude": "89.758930",
+                "longitude": "-125.999410",
+                "created_at": "2024-11-27T13:30:52.000000Z",
+                "updated_at": "2024-11-27T13:30:52.000000Z",
+                "company": {
+                    "id": 3,
+                    "name": "Egestas Hendrerit Neque LLP",
+                    "registration_number": "615308-4733",
+                    "foundation_date": "1994-06-10T00:00:00.000000Z",
+                    "activity": "Building Industry",
+                    "active": 0,
+                    "created_at": "2024-11-27T13:30:52.000000Z",
+                    "updated_at": "2024-11-27T13:30:52.000000Z"
+                }
+            }
+        ],
+        "meta": {
+            "current_page": 1,
+            "total_pages": 1,
+            "total_items": 1,
+            "items_per_page": 10
+        }
+    }
+}
+```
+
+or an error message:
+
+```json
+{
+    "code": 404,
+    "success": false,
+    "message": "Company ID must be set!",
+    "errors": null
+}
+```
+
+---
+
+## 7. Show Information from Company Address
+
+**Endpoint:**  
+`GET /api/company-address/{id}`
+
+Retrieve details for a specific company address by its ID.
+
+#### Response Example
+
+```json
+{
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "id": 2,
+        "company_id": 2,
+        "country": "Philippines",
+        "city": "Bahawalnagar",
+        "zip_code": "60934",
+        "street_address": "6753 Sit Street",
+        "latitude": "4.696710",
+        "longitude": "-101.066120",
+        "created_at": "2024-11-27T13:30:52.000000Z",
+        "updated_at": "2024-11-27T13:30:52.000000Z"
+    }
+}
+```
+
+or an error message:
+```json
+{
+  "code": 404,
+  "success": false,
+  "message": "An error occurred",
+  "errors": "Company Address not found 1"
+}
+```
+
+---
+
+## 8. Create a New Company Address
+
+**Endpoint:**  
+`POST /api/company-address`
+
+Create a new company address. The request body must contain the following fields:
+
+### Post Parameters
+
+| **Name**            | **Required** | **Type**         | **Description**                                                  |
+|---------------------|--------------|------------------|------------------------------------------------------------------|
+| `company_id`        | Optional     | Integer			| The ID of the associated company (nullable, references the `company` table). |
+| `country`           | Optional     | String (max 100) | The country of the company address.                              |
+| `city`              | Optional     | String (max 100) | The city of the company address.                                 |
+| `zip_code`          | Optional     | String (max 20)  | The postal code of the company address.                          |
+| `street_address`    | Optional     | String (max 255) | The street address of the company.                               |
+| `latitude`          | Optional     | Decimal (10, 6)  | The latitude of the company address.                             |
+| `longitude`         | Optional     | Decimal (10, 6)  | The longitude of the company address.                            |
+
+#### Response Example
+
+```json
+{
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "city": "test city",
+        "zip_code": "12345678",
+        "street_address": "test address",
+        "latitude": "47.12332",
+        "longitude": "21.23243",
+        "company_id": null,
+        "updated_at": "2024-11-28T07:33:47.000000Z",
+        "created_at": "2024-11-28T07:33:47.000000Z",
+        "id": 101
+    }
+}
+```
+
+or an error message:
+```json
+{
+    "code": 422,
+    "success": false,
+    "message": "The latitude field must be a number.",
+    "errors": {
+        "latitude": [
+            "The latitude field must be a number."
+        ]
+    }
+}
+```
+
+## 9. Update a New Company Address
+
+**Endpoint:**  
+`PUT /api/company-address/2`
+
+Update a new company address. The request body must contain the following fields:
+
+### Post Parameters
+
+| **Name**            | **Required** | **Type**         | **Description**                                                  |
+|---------------------|--------------|------------------|------------------------------------------------------------------|
+| `country`           | Optional     | String (max 100) | The country of the company address.                              |
+| `city`              | Optional     | String (max 100) | The city of the company address.                                 |
+| `zip_code`          | Optional     | String (max 20)  | The postal code of the company address.                          |
+| `street_address`    | Optional     | String (max 255) | The street address of the company.                               |
+| `latitude`          | Optional     | Decimal (10, 6)  | The latitude of the company address.                             |
+| `longitude`         | Optional     | Decimal (10, 6)  | The longitude of the company address.                            |
+
+#### Response Example
+
+```json
+{
+    "success": true,
+    "message": "Request successful",
+    "data": {
+        "city": "test city",
+        "zip_code": "12345678",
+        "street_address": "test address",
+        "latitude": "47.12332",
+        "longitude": "21.23243",
+        "company_id": null,
+        "updated_at": "2024-11-28T07:33:47.000000Z",
+        "created_at": "2024-11-28T07:33:47.000000Z",
+        "id": 101
+    }
+}
+```
+
+or an error message:
+```json
+{
+    "code": 422,
+    "success": false,
+    "message": "The latitude field must be a number.",
+    "errors": {
+        "latitude": [
+            "The latitude field must be a number."
+        ]
+    }
+}
+```
+
+## 10. Delete a Company Address
+
+**Endpoint:**  
+`DELETE /api/company-address/{id}`
+
+Delete a company address by its ID.
+
+#### Response Example
+
+```json
+{
+    "success": true,   
+}
+```
+
+or an error message:
+
+```json
+{
+    "code": 404,
+    "success": false,
+    "message": "An error occurred",
+    "errors": "Company Address not found: No query results for model [App\\Models\\CompanyAddress] 1"
+}
+```
+

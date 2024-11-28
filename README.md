@@ -247,7 +247,7 @@ Imports companies along with their associated addresses, owners, and employees b
 ### 2. Foundation Date Paginator
 
 **Command:**  
-`php artisan company:foundation-date-paginator [--page]`
+`php artisan company:foundation-date-paginator [--page] [--date-start] [--date-end] [--per-page]`
 
 **Description:**  
 Displays all dates since `2001-01-01` with two columns:
@@ -255,7 +255,15 @@ Displays all dates since `2001-01-01` with two columns:
 - The second column lists the company name if a company was founded on that day, otherwise remains empty.
 
 **Parameters:**
-- `--page`: (Optional) Specifies the page number to list, starting from 1. If not provided, the first page is shown by default.
+
+
+| **Name**     | **Required** | **Type** | **Description**                                                 |
+|--------------|--------------|----------|-----------------------------------------------------------------|
+| `page`       | Optional     | integer  | Specifies the page number to list, starting from 1. If not provided, the first page is shown by default.           |
+| `per-page`   | Optional     | Integer  | The number of records to return per page. Defaults to 50 if not provided.|
+| `date-start` | Optional     | date     | The start date for the date range. Defaults to 2001-01-01 if not provided.                      |
+| `date-end`   | Optional     | date     | The end date for the date range. If not provided, the query will use the current date as the end date.
+
 
 ---
 

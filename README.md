@@ -156,7 +156,7 @@ docker exec -it {php_fpm_container_name} php artisan import:csv
 
 ### 10. (Optional) Change User and Group in php container
 
-Maybe it needs to change the user and group inside the PHP container if you encounter an error. This is currently an issue using the application with Docker, unfortunately.
+You may need to change the user and group inside the PHP container if you encounter an error. Unfortunately, this is a known issue when using the application with Docker.
 
 ```bash
 docker exec -it {php_container} chown -R www-data:www-data *
@@ -285,8 +285,8 @@ Displays all dates since `2001-01-01` with two columns:
 `php artisan company:foundation-date-paginator-with-recursive-cte [--page]`
 
 **Description:**  
-Similar to the `foundation-date-paginator` command but uses a **recursive CTE** (Common Table Expression) to calculate the results.  
-When using this command, ensure the `cte_max_recursion_depth` is set to a sufficiently high value in the database configuration, especially when running the command in a **Docker** environment.
+Similar to the `foundation-date-paginator` command but uses a **recursive CTE** (Common Table Expression) to calculate the results.
+When using this command, ensure that `cte_max_recursion_depth` is set to a sufficiently high value in the database configuration. Note: This is not necessary in a **Docker** environment, as it is already configured automatically
 
 ---
 

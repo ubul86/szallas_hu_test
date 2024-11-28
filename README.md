@@ -36,8 +36,8 @@ First, need a fresh installation of Docker and Docker Compose
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/ubul86/szallas_hu.git
-cd szallas_hu
+git clone https://github.com/ubul86/szallas_hu_test.git
+cd szallas_hu_test
 ```
 
 ### 2. Copy Environment File
@@ -61,10 +61,10 @@ Here is an example configuration:
 DB_CONNECTION=mysql
 DB_HOST=mysql82
 DB_PORT=3306
-DB_DATABASE=your_database_name
-DB_USERNAME=your_database_username
-DB_PASSWORD=your_database_password
-DB_ROOT_PASSWORD=your_database_root_password
+DB_DATABASE=your_database_name # for example szallashu_test
+DB_USERNAME=your_database_username # for example szallashu
+DB_PASSWORD=your_database_password # for example szallashu
+DB_ROOT_PASSWORD=your_database_root_password # for example szallashuadmin
 
 NGINX_PORT=8080
 PHPMYADMIN_PORT=45678
@@ -120,7 +120,7 @@ or
 
 ```bash
 docker exec -it {php_fpm_container_name} bash
-php artisan migrate:fresh --seed
+php artisan migrate:fresh
 ```
 
 ### 8. Install Npm Packages
@@ -142,9 +142,9 @@ docker exec -it {node_container_name} npm install
 docker exec -it {php_fpm_container_name} php artisan import:csv
 ```
 
-### 10. Change User and Group in php container
+### 10. (Optional) Change User and Group in php container
 
-It is necessary to change the user and group inside the PHP container. This is currently an issue using the application with Docker, unfortunately.
+Maybe it needs to change the user and group inside the PHP container if you encounter an error. This is currently an issue using the application with Docker, unfortunately.
 
 ```bash
 docker exec -it {php_container} chown -R www-data:www-data *
@@ -212,8 +212,6 @@ Seed the database with from csv data:
 php artisan import:csv
 ```
 
-The application should now be accessible at http://localhost:8000.
-
 ### 8. Install Npm Packages
 
 ```bash
@@ -227,6 +225,8 @@ Run the Laravel development server:
 ```bash
 php artisan serve
 ```
+
+The application should now be accessible at http://localhost:8000.
 
 ## Optional CLI Commands
 

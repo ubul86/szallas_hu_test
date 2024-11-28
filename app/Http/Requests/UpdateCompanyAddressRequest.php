@@ -18,8 +18,8 @@ class UpdateCompanyAddressRequest extends FormRequest
             'city' => 'nullable|string|max:100',
             'zip_code' => 'nullable|string|max:20',
             'street_address' => 'nullable|string|max:255',
-            'latitude' => 'nullable|float',
-            'longitude' => 'nullable|float',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ];
     }
 }

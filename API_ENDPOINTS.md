@@ -1,5 +1,18 @@
 # API Documentation
 
+# Table of Contents
+
+1. [Get All Companies or a Selected Company](#1-get-all-companies-or-a-selected-company)
+2. [Show Information from Company](#2-show-information-from-company)
+3. [Create a New Company](#3-create-a-new-company)
+4. [Update a Company](#4-update-a-company)
+5. [Delete a Company](#5-delete-a-company)
+6. [Get All Companies Address](#6-get-all-companies-address)
+7. [Show Information from Company Address](#7-show-information-from-company-address)
+8. [Create a New Company Address](#8-create-a-new-company-address)
+9. [Update a New Company Address](#9-update-a-new-company-address)
+10. [Delete a Company Address](#10-delete-a-company-address)
+
 ## 1. Get All Companies or a Selected Company
 
 **Endpoint:**  

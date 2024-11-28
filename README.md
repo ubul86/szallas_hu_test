@@ -1,5 +1,17 @@
 # Szallas.hu Test Rest API application
 
+# Table of Contents
+
+- [Minimum Requirements](#minimum-requirements)
+- [Docker Services](#docker-services)
+- [Installation With Docker](#installation-with-docker)    
+- [Installation Without Docker](#installation-without-docker)    
+- [Optional CLI Commands](#optional-cli-commands)    
+- [Testing and Analysis Tools](#testing-and-analysis-tools)    
+- [Running Tests](#running-tests)    
+- [Docker Installation](#docker-installation)    
+- [Docker Compose Installation](#docker-compose-installation)
+
 ## Minimum Requirements
 
 - **Docker and Docker Compose**

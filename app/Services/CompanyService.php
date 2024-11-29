@@ -7,21 +7,25 @@ use App\Repositories\CompanyAddressRepository;
 use App\Repositories\CompanyEmployeeRepository;
 use App\Repositories\CompanyOwnerRepository;
 use App\Repositories\CompanyRepository;
+use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
+use App\Repositories\Interfaces\CompanyEmployeeRepositoryInterface;
+use App\Repositories\Interfaces\CompanyOwnerRepositoryInterface;
+use App\Repositories\Interfaces\CompanyRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class CompanyService
 {
-    protected CompanyRepository $companyRepository;
-    protected CompanyAddressRepository $companyAddressRepository;
-    protected CompanyEmployeeRepository $companyEmployeeRepository;
-    protected CompanyOwnerRepository $companyOwnerRepository;
+    protected CompanyRepositoryInterface $companyRepository;
+    protected CompanyAddressRepositoryInterface $companyAddressRepository;
+    protected CompanyEmployeeRepositoryInterface $companyEmployeeRepository;
+    protected CompanyOwnerRepositoryInterface $companyOwnerRepository;
 
     public function __construct(
-        CompanyRepository $companyRepository,
-        CompanyAddressRepository $companyAddressRepository,
-        CompanyEmployeeRepository $companyEmployeeRepository,
-        CompanyOwnerRepository $companyOwnerRepository
+        CompanyRepositoryInterface $companyRepository,
+        CompanyAddressRepositoryInterface $companyAddressRepository,
+        CompanyEmployeeRepositoryInterface $companyEmployeeRepository,
+        CompanyOwnerRepositoryInterface $companyOwnerRepository
     ) {
         $this->companyRepository = $companyRepository;
         $this->companyAddressRepository = $companyAddressRepository;

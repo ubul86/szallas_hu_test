@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyOwnerRequest;
 use App\Http\Requests\UpdateCompanyOwnerRequest;
 use App\Repositories\CompanyOwnerRepository;
+use App\Repositories\Interfaces\CompanyOwnerRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,9 +13,9 @@ use Exception;
 
 class CompanyOwnerController extends Controller
 {
-    protected CompanyOwnerRepository $companyOwnerRepository;
+    protected CompanyOwnerRepositoryInterface $companyOwnerRepository;
 
-    public function __construct(CompanyOwnerRepository $companyOwnerRepository)
+    public function __construct(CompanyOwnerRepositoryInterface $companyOwnerRepository)
     {
         $this->companyOwnerRepository = $companyOwnerRepository;
     }

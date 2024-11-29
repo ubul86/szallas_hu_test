@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyAddressRequest;
 use App\Http\Requests\UpdateCompanyAddressRequest;
 use App\Repositories\CompanyAddressRepository;
+use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,9 +13,9 @@ use Exception;
 
 class CompanyAddressController extends Controller
 {
-    protected CompanyAddressRepository $companyAddressRepository;
+    protected CompanyAddressRepositoryInterface $companyAddressRepository;
 
-    public function __construct(CompanyAddressRepository $companyAddressRepository)
+    public function __construct(CompanyAddressRepositoryInterface $companyAddressRepository)
     {
         $this->companyAddressRepository = $companyAddressRepository;
     }

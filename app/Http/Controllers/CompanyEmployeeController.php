@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyEmployeeRequest;
 use App\Http\Requests\UpdateCompanyEmployeeRequest;
 use App\Repositories\CompanyEmployeeRepository;
+use App\Repositories\Interfaces\CompanyEmployeeRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,9 +13,9 @@ use Exception;
 
 class CompanyEmployeeController extends Controller
 {
-    protected CompanyEmployeeRepository $companyEmployeeRepository;
+    protected CompanyEmployeeRepositoryInterface $companyEmployeeRepository;
 
-    public function __construct(CompanyEmployeeRepository $companyEmployeeRepository)
+    public function __construct(CompanyEmployeeRepositoryInterface $companyEmployeeRepository)
     {
         $this->companyEmployeeRepository = $companyEmployeeRepository;
     }

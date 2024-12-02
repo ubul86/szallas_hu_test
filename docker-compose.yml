@@ -30,6 +30,18 @@ services:
         networks:
             - app-network
 
+    php-cli-cron:
+        build:
+            context: ./docker_settings
+            dockerfile: Dockerfile_php_cron
+        container_name: szallas_hu_php_cron
+        volumes:
+            - ./:/var/www/html
+        depends_on:
+            - php
+        networks:
+            - app-network
+
     mysql82:
         build:
             context: ./docker_settings
@@ -110,6 +122,7 @@ services:
             - discovery.type=single-node
             - bootstrap.memory_lock=true
             - ES_JAVA_OPTS=-Xms512m -Xmx512m
+            - ELASTIC_PASSWORD=${ELASTICSEARCH_PASS}
         ulimits:
             memlock:
                 soft: -1

@@ -3,33 +3,20 @@
 namespace App\Services;
 
 use App\Models\Company;
-use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
 use App\Repositories\Interfaces\CompanyElasticsearchRepositoryInterface;
-use App\Repositories\Interfaces\CompanyEmployeeRepositoryInterface;
-use App\Repositories\Interfaces\CompanyOwnerRepositoryInterface;
 use App\Repositories\Interfaces\CompanyRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 
 class CompanyService
 {
     protected CompanyRepositoryInterface $companyRepository;
-    protected CompanyAddressRepositoryInterface $companyAddressRepository;
-    protected CompanyEmployeeRepositoryInterface $companyEmployeeRepository;
-    protected CompanyOwnerRepositoryInterface $companyOwnerRepository;
     protected CompanyElasticsearchRepositoryInterface $companyElasticsearchRepository;
 
     public function __construct(
         CompanyRepositoryInterface $companyRepository,
-        CompanyAddressRepositoryInterface $companyAddressRepository,
-        CompanyEmployeeRepositoryInterface $companyEmployeeRepository,
-        CompanyOwnerRepositoryInterface $companyOwnerRepository,
         CompanyElasticsearchRepositoryInterface $companyElasticsearchRepository
     ) {
         $this->companyRepository = $companyRepository;
-        $this->companyAddressRepository = $companyAddressRepository;
-        $this->companyEmployeeRepository = $companyEmployeeRepository;
-        $this->companyOwnerRepository = $companyOwnerRepository;
         $this->companyElasticsearchRepository = $companyElasticsearchRepository;
 
         $this->createIndexIfNeeded();
@@ -51,38 +38,8 @@ class CompanyService
 
     public function storeWithRelations(array $data): Company
     {
-        DB::beginTransaction();
-
-        $collectedData = collect($data);
-
-        try {
-            $company = $this->companyRepository->store($collectedData->get('company', []));
-
-            if ($collectedData->has('address')) {
-                foreach ($collectedData->get('address', []) as $address) {
-                    $this->companyAddressRepository->store($address, $company->id);
-                }
-            }
-
-            if ($collectedData->has('employee')) {
-                foreach ($collectedData->get('employee', []) as $employee) {
-                    $this->companyEmployeeRepository->store($employee, $company->id);
-                }
-            }
-
-            if ($collectedData->has('owner')) {
-                foreach ($collectedData->get('owner', []) as $owner) {
-                    $this->companyOwnerRepository->store($owner, $company->id);
-                }
-            }
-
-            DB::commit();
-
-            return $company;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        $company = $this->companyRepository->storeWithRelations($data);
+        return $company;
     }
 
     public function update(int $id, array $data): Company

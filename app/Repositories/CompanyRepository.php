@@ -7,6 +7,7 @@ use App\Repositories\Interfaces\CompanyRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class CompanyRepository implements CompanyRepositoryInterface
 {
@@ -77,5 +78,33 @@ class CompanyRepository implements CompanyRepositoryInterface
     public function checkExistsByRegistrationNumber(string $registrationNumber): bool
     {
         return Company::where('registration_number', $registrationNumber)->exists();
+    }
+
+    public function storeWithRelations(array $data): Company
+    {
+        DB::beginTransaction();
+        try {
+            $collectedData = collect($data);
+
+            $company = Company::create($collectedData->get('company', []));
+
+            collect($collectedData->get('address', []))->whenNotEmpty(function ($addresses) use ($company) {
+                $company->address()->createMany($addresses->toArray());
+            });
+
+            collect($collectedData->get('employee', []))->whenNotEmpty(function ($employees) use ($company) {
+                $company->employee()->createMany($employees->toArray());
+            });
+
+            collect($collectedData->get('owner', []))->whenNotEmpty(function ($owners) use ($company) {
+                $company->owner()->createMany($owners->toArray());
+            });
+
+            DB::commit();
+            return $company->load(['address', 'employee', 'owner']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }

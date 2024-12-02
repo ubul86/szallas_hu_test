@@ -4,8 +4,7 @@ namespace App\Repositories\Interfaces;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Http\Promise\Promise;
-use \Elastic\Elasticsearch\Response\Elasticsearch as ElasticsearchResponse;
-use Illuminate\Support\Collection;
+use Elastic\Elasticsearch\Response\Elasticsearch as ElasticsearchResponse;
 
 interface CompanyElasticsearchRepositoryInterface
 {

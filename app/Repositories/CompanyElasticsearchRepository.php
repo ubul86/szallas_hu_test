@@ -9,12 +9,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Exception;
 use Elastic\Elasticsearch\Client as ElasticClient;
 use Http\Promise\Promise;
-use \Elastic\Elasticsearch\Response\Elasticsearch as ElasticsearchResponse;
+use Elastic\Elasticsearch\Response\Elasticsearch as ElasticsearchResponse;
 use Illuminate\Support\Collection;
 
 class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryInterface
 {
-
     protected ElasticClient $elasticsearch;
 
     public function __construct(ElasticClient $elasticsearch)
@@ -118,5 +117,4 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
             ]);
         }
     }
-
 }

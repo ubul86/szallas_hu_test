@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use Elastic\Elasticsearch\Client as ElasticsearchClient;
@@ -9,7 +10,8 @@ use Illuminate\Support\Collection;
 
 class BulkIndexCompaniesJob implements ShouldQueue
 {
-    use Dispatchable, Queueable;
+    use Dispatchable;
+    use Queueable;
 
     protected Collection $companies;
 

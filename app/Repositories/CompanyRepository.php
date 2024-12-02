@@ -107,4 +107,13 @@ class CompanyRepository implements CompanyRepositoryInterface
             throw $e;
         }
     }
+
+    public function findById(int $id): Company
+    {
+        try {
+            return Company::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        }
+    }
 }

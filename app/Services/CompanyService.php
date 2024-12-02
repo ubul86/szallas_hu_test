@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Repositories\Interfaces\CompanyElasticsearchRepositoryInterface;
 use App\Repositories\Interfaces\CompanyRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class CompanyService
 {
@@ -33,7 +34,16 @@ class CompanyService
 
     public function store(array $data): Company
     {
-        return $this->companyRepository->store($data);
+        return DB::transaction(function () use ($data) {
+            $company = $this->companyRepository->store($data);
+            try {
+                $this->companyElasticsearchRepository->store($company);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+
+            return $company;
+        });
     }
 
     public function storeWithRelations(array $data): Company
@@ -44,12 +54,34 @@ class CompanyService
 
     public function update(int $id, array $data): Company
     {
-        return $this->companyRepository->update($id, $data);
+        return DB::transaction(function () use ($id, $data) {
+            $company = $this->companyRepository->update($id, $data);
+
+            try {
+                $this->companyElasticsearchRepository->update($company);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+
+            return $company;
+        });
     }
 
     public function destroy(int $id): bool|null
     {
-        return $this->companyRepository->destroy($id);
+        DB::transaction(function () use ($id) {
+            $company = $this->companyRepository->findById($id);
+
+            $this->companyRepository->destroy($id);
+
+            try {
+                $this->companyElasticsearchRepository->destroy($company->id);
+                return true;
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        });
+        return false;
     }
 
     public function show(int $id): Company

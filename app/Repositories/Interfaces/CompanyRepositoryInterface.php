@@ -18,4 +18,5 @@ interface CompanyRepositoryInterface
     public function destroy(int $id): bool|null;
     public function checkExistsByRegistrationNumber(string $registrationNumber): bool;
     public function storeWithRelations(array $data): Company;
+    public function findById(int $id): Company;
 }

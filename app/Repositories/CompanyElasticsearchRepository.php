@@ -4,13 +4,11 @@ namespace App\Repositories;
 
 use App\Models\Company;
 use App\Repositories\Interfaces\CompanyElasticsearchRepositoryInterface;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Exception;
 use Elastic\Elasticsearch\Client as ElasticClient;
 use Http\Promise\Promise;
 use Elastic\Elasticsearch\Response\Elasticsearch as ElasticsearchResponse;
-use Illuminate\Support\Collection;
 
 class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryInterface
 {
@@ -75,22 +73,39 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
         ]);
     }
 
-    public function store(array $data): Company
+    public function store(Company $company): void
     {
-        // TODO: Implement store() method.
-    }
-
-    public function update(int $id, array $data): Company
-    {
-        // TODO: Implement update() method.
-    }
-
-    public function destroy(int $id): ElasticsearchResponse|Promise
-    {
-        return $this->elasticsearch->delete([
+        $company->active = (int) $company->active;
+        $params = [
             'index' => 'companies',
-            'id' => $id
+            'id' => $company->id,
+            'body' => $company->toArray(),
+        ];
+
+        $this->elasticsearch->index($params);
+    }
+
+    public function update(Company $company): void
+    {
+        $this->elasticsearch->update([
+            'index' => 'companies',
+            'id' => $company->id,
+            'body' => [
+                'doc' => $company->toArray()
+            ],
         ]);
+    }
+
+    public function destroy(int $id): void
+    {
+        try {
+            $this->elasticsearch->delete([
+                'index' => 'companies',
+                'id' => $id,
+            ]);
+        } catch (ClientResponseException $e) {
+            throw $e;
+        }
     }
 
     public function createIndexIfNeeded(): void

@@ -37,6 +37,7 @@ services:
         container_name: szallas_hu_php_cron
         volumes:
             - ./:/var/www/html
+            - ./docker_settings/php.ini:/usr/local/etc/php/conf.d/php-memory-limit.ini
         depends_on:
             - php
         networks:

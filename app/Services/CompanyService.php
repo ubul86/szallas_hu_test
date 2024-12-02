@@ -3,11 +3,8 @@
 namespace App\Services;
 
 use App\Models\Company;
-use App\Repositories\CompanyAddressRepository;
-use App\Repositories\CompanyEmployeeRepository;
-use App\Repositories\CompanyOwnerRepository;
-use App\Repositories\CompanyRepository;
 use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
+use App\Repositories\Interfaces\CompanyElasticsearchRepositoryInterface;
 use App\Repositories\Interfaces\CompanyEmployeeRepositoryInterface;
 use App\Repositories\Interfaces\CompanyOwnerRepositoryInterface;
 use App\Repositories\Interfaces\CompanyRepositoryInterface;
@@ -20,17 +17,22 @@ class CompanyService
     protected CompanyAddressRepositoryInterface $companyAddressRepository;
     protected CompanyEmployeeRepositoryInterface $companyEmployeeRepository;
     protected CompanyOwnerRepositoryInterface $companyOwnerRepository;
+    protected CompanyElasticsearchRepositoryInterface $companyElasticsearchRepository;
 
     public function __construct(
         CompanyRepositoryInterface $companyRepository,
         CompanyAddressRepositoryInterface $companyAddressRepository,
         CompanyEmployeeRepositoryInterface $companyEmployeeRepository,
-        CompanyOwnerRepositoryInterface $companyOwnerRepository
+        CompanyOwnerRepositoryInterface $companyOwnerRepository,
+        CompanyElasticsearchRepositoryInterface $companyElasticsearchRepository
     ) {
         $this->companyRepository = $companyRepository;
         $this->companyAddressRepository = $companyAddressRepository;
         $this->companyEmployeeRepository = $companyEmployeeRepository;
         $this->companyOwnerRepository = $companyOwnerRepository;
+        $this->companyElasticsearchRepository = $companyElasticsearchRepository;
+
+        $this->createIndexIfNeeded();
     }
 
     /**
@@ -39,7 +41,7 @@ class CompanyService
      */
     public function index(array $filters): LengthAwarePaginator
     {
-        return $this->companyRepository->index($filters);
+        return $this->companyElasticsearchRepository->index($filters);
     }
 
     public function store(array $data): Company
@@ -101,5 +103,10 @@ class CompanyService
     public function checkExistsByRegistrationNumber(string $registrationNumber): bool
     {
         return $this->companyRepository->checkExistsByRegistrationNumber($registrationNumber);
+    }
+
+    protected function createIndexIfNeeded(): void
+    {
+        $this->companyElasticsearchRepository->createIndexIfNeeded();
     }
 }

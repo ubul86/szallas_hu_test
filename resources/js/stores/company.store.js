@@ -17,6 +17,10 @@ export const useCompanyStore = defineStore('company', {
             this.meta = data.meta;
         },
 
+        async show(id) {
+            console.log(id)
+        },
+
         async store(item) {
             const storedItem = await companyService.store(item);
             this.companies.push(storedItem);

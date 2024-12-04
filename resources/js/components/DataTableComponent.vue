@@ -54,6 +54,13 @@
             </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
+            <v-icon
+                size="small"
+                class="ms-2"
+                @click="goToCompany(item.id)"
+            >
+                mdi-eye
+            </v-icon>
             <v-icon class="me-2" size="small" @click="editItem(item)">mdi-pencil</v-icon>
             <v-icon size="small" @click="dialogDelete(item, index)">mdi-delete</v-icon>
         </template>
@@ -95,6 +102,7 @@ import ToggleHeaderComponent from '@/components/ToggleHeaderComponent.vue'
 import { useDisplay } from 'vuetify'
 import EditCompanyDialogForm from '@/components/dialogs/EditCompanyDialogForm.vue'
 import {useCompanyStore} from "@/stores/company.store.js";
+import { useRouter } from 'vue-router';
 
 const isMobileView = ref(window.innerWidth < 960);
 
@@ -111,6 +119,8 @@ onBeforeUnmount(() => {
 });
 
 const { smAndDown } = useDisplay()
+
+const router = useRouter();
 
 const dialog = ref(false)
 
@@ -242,6 +252,10 @@ const closeDelete = async() => {
     await nextTick();
     Object.assign(editedItem, defaultItem)
     editedIndex.value = -1
+};
+
+const goToCompany = (id) => {
+    router.push({ name: 'CompanyView', params: { id } });
 };
 
 </script>

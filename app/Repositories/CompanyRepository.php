@@ -34,9 +34,13 @@ class CompanyRepository implements CompanyRepositoryInterface
     public function show(int $id): Company
     {
         try {
-            return Company::findOrFail($id);
+            $company = Company::withRelations()->where('id', $id)->first();
+            if (!$company) {
+                throw new ModelNotFoundException('Company Not Found');
+            }
+            return $company;
         } catch (ModelNotFoundException $e) {
-            throw new ModelNotFoundException('Company not found: ' . $e->getMessage());
+            throw new ModelNotFoundException($e->getMessage());
         }
     }
 

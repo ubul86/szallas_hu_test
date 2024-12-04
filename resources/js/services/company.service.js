@@ -10,6 +10,15 @@ class CompanyService {
             });
     }
 
+    show(id) {
+        return publicApi
+            .get(`/company/${id}`)
+            .then((response) => response.data.data)
+            .catch((error) => {
+                throw error;
+            });
+    }
+
     store(item) {
         return publicApi.post(`/company`, item).then((response) => response.data.data)
             .catch((error) => {

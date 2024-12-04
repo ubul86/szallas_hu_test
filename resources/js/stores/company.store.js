@@ -18,7 +18,7 @@ export const useCompanyStore = defineStore('company', {
         },
 
         async show(id) {
-            console.log(id)
+            return await companyService.show(id);
         },
 
         async store(item) {

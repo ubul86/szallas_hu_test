@@ -61,7 +61,6 @@
             >
                 mdi-eye
             </v-icon>
-            <v-icon class="me-2" size="small" @click="editItem(item)">mdi-pencil</v-icon>
             <v-icon size="small" @click="dialogDelete(item, index)">mdi-delete</v-icon>
         </template>
         <template v-slot:no-data>
@@ -223,11 +222,6 @@ const companyFirstOwner = (item) => {
 
 const countedEmployees = (item) => {
     return item.employees.length;
-}
-
-const editItem = (item) => {
-    editedIndex.value = companyStore.companies.indexOf(item)
-    dialog.value = true
 }
 
 const openDialog = () => {

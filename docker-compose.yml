@@ -30,6 +30,19 @@ services:
         networks:
             - app-network
 
+    php-cli-cron:
+        build:
+            context: ./docker_settings
+            dockerfile: Dockerfile_php_cron
+        container_name: szallas_hu_php_cron
+        volumes:
+            - ./:/var/www/html
+            - ./docker_settings/php.ini:/usr/local/etc/php/conf.d/php-memory-limit.ini
+        depends_on:
+            - php
+        networks:
+            - app-network
+
     mysql82:
         build:
             context: ./docker_settings
@@ -102,6 +115,25 @@ services:
         working_dir: /www/local
         networks:
             - app-network
+
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.10.1
+        container_name: szallas_hu_elasticsearch
+        environment:
+            - discovery.type=single-node
+            - bootstrap.memory_lock=true
+            - ES_JAVA_OPTS=-Xms512m -Xmx512m
+            - ELASTIC_PASSWORD=${ELASTICSEARCH_PASS}
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        ports:
+            - "9200:9200"
+        networks:
+            - app-network
+        volumes:
+            - ./docker_settings/elasticsearch_data:/usr/share/elasticsearch/data
 
 networks:
     app-network:

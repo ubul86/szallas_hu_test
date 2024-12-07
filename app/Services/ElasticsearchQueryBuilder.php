@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Elastic\Elasticsearch\Client as ElasticClient;
+use Http\Promise\Promise;
 
 class ElasticsearchQueryBuilder
 {
@@ -22,7 +23,13 @@ class ElasticsearchQueryBuilder
 
     public function save(): array
     {
-        return $this->elasticsearch->index($this->query)->asArray();
+        $response = $this->elasticsearch->index($this->query);
+
+        if ($response instanceof Promise) {
+            $response = $response->wait();
+        }
+
+        return isset($response['result']) ? $response['result'] : [];
     }
 
     public function matchAll(): self
@@ -55,7 +62,7 @@ class ElasticsearchQueryBuilder
         ]);
     }
 
-    public function term(string $field, $value): self
+    public function term(string $field, ?string $value): self
     {
         return $this->body([
             'query' => [
@@ -66,7 +73,7 @@ class ElasticsearchQueryBuilder
         ]);
     }
 
-    public function where(string $field, $value, string $operator = '='): self
+    public function where(string $field, ?string $value, string $operator = '='): self
     {
         $condition = match ($operator) {
             '=' => ['term' => [$field => $value]],
@@ -108,7 +115,13 @@ class ElasticsearchQueryBuilder
 
     public function execute(): array
     {
-        return $this->elasticsearch->search($this->query)->asArray();
+        $response = $this->elasticsearch->search($this->query);
+
+        if ($response instanceof Promise) {
+            $response = $response->wait();
+        }
+
+        return isset($response['hits']) ? $response['hits']['hits'] : [];
     }
 
     public function getQuery(): array
@@ -122,7 +135,7 @@ class ElasticsearchQueryBuilder
         return $this;
     }
 
-    public function id(string $id): self
+    public function id(int $id): self
     {
         $this->query['id'] = $id;
         return $this;
@@ -130,13 +143,26 @@ class ElasticsearchQueryBuilder
 
     public function indexExists(): bool
     {
-        return $this->elasticsearch->indices()->exists([
+        $response =  $this->elasticsearch->indices()->exists([
             'index' => $this->query['index'] ?? null,
-        ])->asBool();
+        ]);
+
+        if ($response instanceof Promise) {
+            $response = $response->wait();
+        }
+
+        return isset($response['status']) && $response['status'] === 200;
     }
 
     public function delete(): array
     {
-        return $this->elasticsearch->delete($this->query)->asArray();
+
+        $response = $this->elasticsearch->delete($this->query);
+
+        if ($response instanceof Promise) {
+            $response = $response->wait();
+        }
+
+        return $response['result'] ?? [];
     }
 }

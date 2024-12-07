@@ -9,6 +9,10 @@ use Elastic\Elasticsearch\Response\Elasticsearch as ElasticsearchResponse;
 
 interface CompanyElasticsearchRepositoryInterface
 {
+    /**
+     * @param array $filters
+     * @return LengthAwarePaginator<Company>
+     */
     public function index(array $filters = []): LengthAwarePaginator;
 
     public function search(array $filters): array;

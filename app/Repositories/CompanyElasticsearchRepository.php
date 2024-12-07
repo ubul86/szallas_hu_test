@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Repositories\Interfaces\CompanyElasticsearchRepositoryInterface;
 use App\Services\ElasticsearchQueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryInterface
 {
@@ -32,6 +33,10 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
         return $query->execute();
     }
 
+    /**
+     * @param array $filters
+     * @return LengthAwarePaginator<Company>
+     */
     public function index(array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['itemsPerPage'] ?? 10;
@@ -45,7 +50,7 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
             ->size($perPage)
             ->execute();
 
-        $companies = collect($response['hits']['hits'])->map(fn($hit) => $hit['_source']);
+        $companies = (new Collection($response['hits']['hits']))->map(fn($hit) => $hit['_source']);
         $total = $response['hits']['total']['value'];
 
         return new LengthAwarePaginator(
@@ -64,17 +69,18 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
     {
         return $this->queryBuilder
             ->index('companies')
-            ->term('_id', $id)
+            ->term('_id', (string) $id)
             ->execute();
     }
 
     public function store(Company $company): void
     {
-        $company->active = (int) $company->active;
+        $data = $company->toArray();
+        $data['active'] = (int) $company->active;
 
         $this->queryBuilder
             ->index('companies')
-            ->body($company->toArray())
+            ->body($data)
             ->save();
     }
 
@@ -111,6 +117,7 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
                         'properties' => [
                             'name' => ['type' => 'text'],
                             'location' => ['type' => 'text'],
+                            'active' => ['type' => 'bool']
                         ],
                     ],
                 ])

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Company;
 use Elastic\Elasticsearch\Client as ElasticsearchClient;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,8 +14,14 @@ class BulkIndexCompaniesJob implements ShouldQueue
     use Dispatchable;
     use Queueable;
 
+    /**
+     * @var Collection<int, Company>
+     */
     protected Collection $companies;
 
+    /**
+     * @param Collection<Int, Company> $companies
+     */
     public function __construct(Collection $companies)
     {
         $this->companies = $companies;

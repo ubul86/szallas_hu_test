@@ -13,8 +13,8 @@ class ElasticsearchServiceProvider extends ServiceProvider
         $this->app->singleton(Client::class, function () {
             $client = ClientBuilder::create()
                 ->setHosts(config('elasticsearch.hosts'));
-            $elasticUser = env('ELASTICSEARCH_USER');
-            $elasticPassword = env('ELASTICSEARCH_PASS');
+            $elasticUser = (string) env('ELASTICSEARCH_USER', '');
+            $elasticPassword = (string) env('ELASTICSEARCH_PASS', '');
             if ($elasticUser && $elasticPassword) {
                 $client->setBasicAuthentication($elasticUser, $elasticPassword);
             }

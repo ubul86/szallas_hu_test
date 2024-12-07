@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class CompanyRepository implements CompanyRepositoryInterface
 {
@@ -88,15 +89,15 @@ class CompanyRepository implements CompanyRepositoryInterface
 
             $company = Company::create($collectedData->get('company', []));
 
-            collect($collectedData->get('address', []))->whenNotEmpty(function ($addresses) use ($company) {
+            (new Collection($collectedData->get('address', [])))->whenNotEmpty(function ($addresses) use ($company) {
                 $company->address()->createMany($addresses->toArray());
             });
 
-            collect($collectedData->get('employee', []))->whenNotEmpty(function ($employees) use ($company) {
+            (new Collection($collectedData->get('employee', [])))->whenNotEmpty(function ($employees) use ($company) {
                 $company->employee()->createMany($employees->toArray());
             });
 
-            collect($collectedData->get('owner', []))->whenNotEmpty(function ($owners) use ($company) {
+            (new Collection($collectedData->get('owner', [])))->whenNotEmpty(function ($owners) use ($company) {
                 $company->owner()->createMany($owners->toArray());
             });
 

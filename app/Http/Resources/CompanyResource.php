@@ -18,21 +18,18 @@ class CompanyResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $data = collect($this->resource);
-
         return [
-            'id' => $data->get('id'),
-            'name' => $data->get('name'),
-            'registration_number' => $data->get('registration_number'),
-            'foundation_date' => $data->get('foundation_date'),
-            'activity' => $data->get('activity'),
-            'active' => $data->get('active'),
-            'created_at' => $data->get('created_at'),
-            'updated_at' => $data->get('updated_at'),
-
-            'addresses' => $data->has('address') ? $data->get('address') : null,
-            'employees' => $data->has('employee') ? $data->get('employee') : null,
-            'owners' => $data->has('owner') ? $data->get('owner') : null,
+            'id' => $this->resource->id,
+            'name' => $this->resource->name,
+            'registration_number' => $this->resource->registration_number,
+            'foundation_date' => $this->resource->foundation_date,
+            'activity' => $this->resource->activity,
+            'active' => $this->resource->active,
+            'created_at' => $this->resource->created_at,
+            'updated_at' => $this->resource->updated_at,
+            'addresses' => $this->resource->address ?? null,
+            'employees' => $this->resource->employee ?? null,
+            'owners' => $this->resource->owner ?? null,
         ];
     }
 }

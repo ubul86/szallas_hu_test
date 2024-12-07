@@ -5,7 +5,8 @@
 - [Minimum Requirements](#minimum-requirements)
 - [Docker Services](#docker-services)
 - [Installation With Docker](#installation-with-docker)    
-- [Installation Without Docker](#installation-without-docker)    
+- [Installation Without Docker](#installation-without-docker)
+- [API Endpoints](#api-endpoints)
 - [Optional CLI Commands](#optional-cli-commands)    
 - [Testing and Analysis Tools](#testing-and-analysis-tools)    
 - [Running Tests](#running-tests)    
@@ -249,6 +250,11 @@ php artisan serve
 ```
 
 The application should now be accessible at http://localhost:8000.
+
+## API Endpoints
+
+Detailed information about the available API endpoints can be found in the [API_ENDPOINTS.md](./API_ENDPOINTS.md) file.
+
 
 ## Optional CLI Commands
 

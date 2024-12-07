@@ -11,9 +11,9 @@ interface CompanyElasticsearchRepositoryInterface
 {
     public function index(array $filters = []): LengthAwarePaginator;
 
-    public function search(array $filters): ElasticsearchResponse|Promise;
+    public function search(array $filters): array;
 
-    public function show(int $id): ElasticsearchResponse|Promise;
+    public function show(int $id): array;
 
     public function store(Company $company): void;
 

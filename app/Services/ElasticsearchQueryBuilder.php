@@ -121,7 +121,7 @@ class ElasticsearchQueryBuilder
             $response = $response->wait();
         }
 
-        return isset($response['hits']) ? $response['hits']['hits'] : [];
+        return isset($response['hits']) ? $response['hits'] : [];
     }
 
     public function getQuery(): array
@@ -151,7 +151,7 @@ class ElasticsearchQueryBuilder
             $response = $response->wait();
         }
 
-        return isset($response['status']) && $response['status'] === 200;
+        return $response->getStatusCode() === 200;
     }
 
     public function delete(): array

@@ -50,8 +50,8 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
             ->size($perPage)
             ->execute();
 
-        $companies = (new Collection($response['hits']['hits']))->map(fn($hit) => $hit['_source']);
-        $total = $response['hits']['total']['value'];
+        $companies = (new Collection($response['hits']))->map(fn($hit) => $hit['_source']);
+        $total = $response['total']['value'];
 
         return new LengthAwarePaginator(
             $companies,

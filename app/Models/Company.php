@@ -32,6 +32,7 @@ class Company extends Model
      */
     protected $casts = [
         'foundation_date' => 'date',
+        'active' => 'boolean',
     ];
 
     protected static function boot()

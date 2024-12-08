@@ -5,7 +5,8 @@
 - [Minimum Requirements](#minimum-requirements)
 - [Docker Services](#docker-services)
 - [Installation With Docker](#installation-with-docker)    
-- [Installation Without Docker](#installation-without-docker)    
+- [Installation Without Docker](#installation-without-docker)
+- [API Endpoints](#api-endpoints)
 - [Optional CLI Commands](#optional-cli-commands)    
 - [Testing and Analysis Tools](#testing-and-analysis-tools)    
 - [Running Tests](#running-tests)    
@@ -38,6 +39,10 @@ This project uses Docker to containerize the different components of the applica
 
 - **node**: This service is responsible for building and serving the Vue.js frontend application. It runs the Node.js server, compiles assets, and serves the frontend during development.
 
+- **php-cli-cron**: A dedicated service for running scheduled cron jobs. This service is built from the `Dockerfile_php_cron` file located in the `docker_settings` directory. It mounts the application code and configuration files from the host machine, ensuring that any changes are reflected in the container. This service depends on the `php` service and uses the shared application codebase.
+
+- **elasticsearch**: This service provides a search engine for the application, enabling efficient and scalable full-text search capabilities. It uses the `docker.elastic.co/elasticsearch/elasticsearch:8.10.1` image and runs as a single-node instance. Persistent data storage ensures that search indexes are retained across container restarts. The service is secured with an environment variable-defined password (`ELASTICSEARCH_PASS`) and is accessible on port `9200`. Memory usage is configured to optimize performance.
+
 
 ## Installation With Docker
 
@@ -66,7 +71,7 @@ cp .env.testing.example .env.testing
 ```
 
 ### 3. Set Environment Variables
-In the .env file, you need to set the DB connections and some Host.
+In the .env file, you need to set the DB connections and some Host and Elasticsearch params.
 Here is an example configuration:
 
 ```env
@@ -80,6 +85,12 @@ DB_ROOT_PASSWORD=your_database_root_password # for example szallashuadmin
 
 NGINX_PORT=8080
 PHPMYADMIN_PORT=45678
+
+...
+
+ELASTICSEARCH_HOST=elasticsearch:9200
+ELASTICSEARCH_USER=elastic
+ELASTICSEARCH_PASS=elastic
 
 ```
 
@@ -239,6 +250,11 @@ php artisan serve
 ```
 
 The application should now be accessible at http://localhost:8000.
+
+## API Endpoints
+
+Detailed information about the available API endpoints can be found in the [API_ENDPOINTS.md](./API_ENDPOINTS.md) file.
+
 
 ## Optional CLI Commands
 

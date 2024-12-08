@@ -3,13 +3,7 @@
 namespace App\Services;
 
 use App\Models\Company;
-use App\Repositories\CompanyAddressRepository;
-use App\Repositories\CompanyEmployeeRepository;
-use App\Repositories\CompanyOwnerRepository;
-use App\Repositories\CompanyRepository;
-use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
-use App\Repositories\Interfaces\CompanyEmployeeRepositoryInterface;
-use App\Repositories\Interfaces\CompanyOwnerRepositoryInterface;
+use App\Repositories\Interfaces\CompanyElasticsearchRepositoryInterface;
 use App\Repositories\Interfaces\CompanyRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -17,20 +11,16 @@ use Illuminate\Support\Facades\DB;
 class CompanyService
 {
     protected CompanyRepositoryInterface $companyRepository;
-    protected CompanyAddressRepositoryInterface $companyAddressRepository;
-    protected CompanyEmployeeRepositoryInterface $companyEmployeeRepository;
-    protected CompanyOwnerRepositoryInterface $companyOwnerRepository;
+    protected CompanyElasticsearchRepositoryInterface $companyElasticsearchRepository;
 
     public function __construct(
         CompanyRepositoryInterface $companyRepository,
-        CompanyAddressRepositoryInterface $companyAddressRepository,
-        CompanyEmployeeRepositoryInterface $companyEmployeeRepository,
-        CompanyOwnerRepositoryInterface $companyOwnerRepository
+        CompanyElasticsearchRepositoryInterface $companyElasticsearchRepository
     ) {
         $this->companyRepository = $companyRepository;
-        $this->companyAddressRepository = $companyAddressRepository;
-        $this->companyEmployeeRepository = $companyEmployeeRepository;
-        $this->companyOwnerRepository = $companyOwnerRepository;
+        $this->companyElasticsearchRepository = $companyElasticsearchRepository;
+
+        $this->createIndexIfNeeded();
     }
 
     /**
@@ -39,58 +29,59 @@ class CompanyService
      */
     public function index(array $filters): LengthAwarePaginator
     {
-        return $this->companyRepository->index($filters);
+        return $this->companyElasticsearchRepository->index($filters);
     }
 
     public function store(array $data): Company
     {
-        return $this->companyRepository->store($data);
+        return DB::transaction(function () use ($data) {
+            $company = $this->companyRepository->store($data);
+            try {
+                $this->companyElasticsearchRepository->store($company);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+
+            return $company;
+        });
     }
 
     public function storeWithRelations(array $data): Company
     {
-        DB::beginTransaction();
-
-        $collectedData = collect($data);
-
-        try {
-            $company = $this->companyRepository->store($collectedData->get('company', []));
-
-            if ($collectedData->has('address')) {
-                foreach ($collectedData->get('address', []) as $address) {
-                    $this->companyAddressRepository->store($address, $company->id);
-                }
-            }
-
-            if ($collectedData->has('employee')) {
-                foreach ($collectedData->get('employee', []) as $employee) {
-                    $this->companyEmployeeRepository->store($employee, $company->id);
-                }
-            }
-
-            if ($collectedData->has('owner')) {
-                foreach ($collectedData->get('owner', []) as $owner) {
-                    $this->companyOwnerRepository->store($owner, $company->id);
-                }
-            }
-
-            DB::commit();
-
-            return $company;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        $company = $this->companyRepository->storeWithRelations($data);
+        return $company;
     }
 
     public function update(int $id, array $data): Company
     {
-        return $this->companyRepository->update($id, $data);
+        return DB::transaction(function () use ($id, $data) {
+            $company = $this->companyRepository->update($id, $data);
+
+            try {
+                $this->companyElasticsearchRepository->update($company);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+
+            return $company;
+        });
     }
 
     public function destroy(int $id): bool|null
     {
-        return $this->companyRepository->destroy($id);
+        DB::transaction(function () use ($id) {
+            $company = $this->companyRepository->findById($id);
+
+            $this->companyRepository->destroy($id);
+
+            try {
+                $this->companyElasticsearchRepository->destroy($company->id);
+                return true;
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        });
+        return false;
     }
 
     public function show(int $id): Company
@@ -101,5 +92,10 @@ class CompanyService
     public function checkExistsByRegistrationNumber(string $registrationNumber): bool
     {
         return $this->companyRepository->checkExistsByRegistrationNumber($registrationNumber);
+    }
+
+    protected function createIndexIfNeeded(): void
+    {
+        $this->companyElasticsearchRepository->createIndexIfNeeded();
     }
 }

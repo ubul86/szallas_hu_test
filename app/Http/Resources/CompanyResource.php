@@ -27,10 +27,9 @@ class CompanyResource extends JsonResource
             'active' => $this->resource->active,
             'created_at' => $this->resource->created_at,
             'updated_at' => $this->resource->updated_at,
-
-            'addresses' => $this->whenLoaded('address'),
-            'employees' => $this->whenLoaded('employee'),
-            'owners' => $this->whenLoaded('owner'),
+            'addresses' => $this->resource->address ?? null,
+            'employees' => $this->resource->employee ?? null,
+            'owners' => $this->resource->owner ?? null,
         ];
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Formatters\ElasticsearchFormatter;
 
 class CompanyController extends Controller
 {
@@ -25,8 +26,9 @@ class CompanyController extends Controller
     {
         try {
             $models = $this->companyService->index($request->all());
+            $formattedModels = array_map([ElasticsearchFormatter::class, 'format'], $models->getCollection()->toArray());
             return response()->json([
-                'items' => CompanyResource::collection($models->items()),
+                'items' => $formattedModels,
                 'meta' => [
                     'current_page' => $models->currentPage(),
                     'total_pages' => $models->lastPage(),

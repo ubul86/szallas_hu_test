@@ -75,7 +75,7 @@ class ImportCsv extends Command
                 'registration_number' => $record->get('companyRegistrationNumber'),
                 'foundation_date' => $record->get('companyFoundationDate', null),
                 'activity' => $record->get('activity', null),
-                'active' => (int) $record->get('active', 0),
+                'active' => filter_var($record->get('active', 'false'), FILTER_VALIDATE_BOOLEAN),
             ],
             'address' => [[
                 'country' => $record->get('country'),

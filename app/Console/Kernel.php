@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('elasticsearch:index-companies')->dailyAt('09:00');
+        $schedule->command('elasticsearch:sync-companies')->dailyAt('09:00');
     }
 
     /**

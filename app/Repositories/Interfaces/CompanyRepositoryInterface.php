@@ -19,4 +19,5 @@ interface CompanyRepositoryInterface
     public function checkExistsByRegistrationNumber(string $registrationNumber): bool;
     public function storeWithRelations(array $data): Company;
     public function findById(int $id): Company;
+    public function getCompanyIds(): array;
 }

@@ -2,34 +2,28 @@
 
 namespace App\Services;
 
-use App\Models\Company;
-use Elastic\Elasticsearch\Client as ElasticsearchClient;
+use App\Repositories\Interfaces\CompanyElasticsearchRepositoryInterface;
+use App\Repositories\Interfaces\CompanyRepositoryInterface;
 
 class SyncDatasService
 {
-    protected ElasticsearchClient $elasticsearch;
+    protected CompanyRepositoryInterface $companyRepository;
+    protected CompanyElasticsearchRepositoryInterface $companyElasticsearchRepository;
 
-    public function __construct(ElasticsearchClient $elasticsearch)
+    public function __construct(CompanyRepositoryInterface $companyRepository, CompanyElasticsearchRepositoryInterface $companyElasticsearchRepository)
     {
-        $this->elasticsearch = $elasticsearch;
+        $this->companyRepository = $companyRepository;
+        $this->companyElasticsearchRepository = $companyElasticsearchRepository;
     }
 
     public function getElasticRecords(): array
     {
-        $response = $this->elasticsearch->search([
-            'index' => 'companies',
-            'size' => 10000,
-            '_source' => ['_id', 'updated_at'],
-        ]);
-
-        return collect($response['hits']['hits'])->mapWithKeys(function ($hit) {
-            return [$hit['_id'] => $hit['_source']['updated_at']];
-        })->toArray();
+        return $this->companyElasticsearchRepository->getElasticRecords();
     }
 
     public function getMysqlRecords(): array
     {
-        return Company::pluck('updated_at', 'id')->toArray();
+        return $this->companyRepository->getCompanyIds();
     }
 
     public function getRecordsToDelete(array $elasticIds, array $mysqlIds): array

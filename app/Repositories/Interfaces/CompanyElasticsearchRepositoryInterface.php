@@ -26,4 +26,6 @@ interface CompanyElasticsearchRepositoryInterface
     public function destroy(int $id): void;
 
     public function createIndexIfNeeded(): void;
+
+    public function getElasticRecords(): array;
 }

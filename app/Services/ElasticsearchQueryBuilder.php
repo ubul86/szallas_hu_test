@@ -21,7 +21,7 @@ class ElasticsearchQueryBuilder
         return $this;
     }
 
-    public function save(): array
+    public function save(): ?string
     {
         $response = $this->elasticsearch->index($this->query);
 
@@ -29,7 +29,7 @@ class ElasticsearchQueryBuilder
             $response = $response->wait();
         }
 
-        return isset($response['result']) ? $response['result'] : [];
+        return isset($response['result']) ? $response['result'] : null;
     }
 
     public function matchAll(): self

@@ -124,6 +124,9 @@ services:
             - bootstrap.memory_lock=true
             - ES_JAVA_OPTS=-Xms512m -Xmx512m
             - ELASTIC_PASSWORD=${ELASTICSEARCH_PASS}
+            - http.cors.enabled=true
+            - http.cors.allow-origin="http://localhost:8081"
+            - http.cors.allow-headers="X-Requested-With,Content-Type,Content-Length,Authorization"
         ulimits:
             memlock:
                 soft: -1
@@ -134,6 +137,20 @@ services:
             - app-network
         volumes:
             - ./docker_settings/elasticsearch_data:/usr/share/elasticsearch/data
+
+    elasticvue:
+        image: cars10/elasticvue:latest
+        container_name: szallas_hu_elasticvue
+        environment:
+            - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOST}
+            - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USER}
+            - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASS}
+        ports:
+            - "8081:8080"
+        networks:
+            - app-network
+        depends_on:
+            - elasticsearch
 
 networks:
     app-network:

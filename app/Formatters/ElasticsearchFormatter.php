@@ -15,9 +15,9 @@ class ElasticsearchFormatter
             'active' => $data['active'] ?? null,
             'created_at' => $data['created_at'] ?? null,
             'updated_at' => $data['updated_at'] ?? null,
-            'addresses' => $data['address'] ?? null,
-            'employees' => $data['employee'] ?? null,
-            'owners' => $data['owner'] ?? null,
+            'addresses' => $data['address'] ?? [],
+            'employees' => $data['employee'] ?? [],
+            'owners' => $data['owner'] ?? [],
         ];
     }
 }

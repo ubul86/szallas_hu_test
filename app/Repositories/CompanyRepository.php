@@ -121,4 +121,9 @@ class CompanyRepository implements CompanyRepositoryInterface
             throw $e;
         }
     }
+
+    public function getCompanyIds(): array
+    {
+        return Company::pluck('updated_at', 'id')->toArray();
+    }
 }

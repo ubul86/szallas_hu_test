@@ -165,4 +165,15 @@ class ElasticsearchQueryBuilder
 
         return $response['result'] ?? [];
     }
+
+    public function search(): array
+    {
+        $response = $this->elasticsearch->search($this->query);
+
+        if ($response instanceof Promise) {
+            $response = $response->wait();
+        }
+
+        return isset($response['hits']['hits']) ? $response['hits']['hits'] : [];
+    }
 }

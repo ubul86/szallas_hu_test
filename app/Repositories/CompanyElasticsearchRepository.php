@@ -76,7 +76,6 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
     public function store(Company $company): void
     {
         $data = $company->toArray();
-        $data['active'] = (int) $company->active;
 
         $this->queryBuilder
             ->index('companies')
@@ -117,11 +116,26 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
                         'properties' => [
                             'name' => ['type' => 'text'],
                             'location' => ['type' => 'text'],
-                            'active' => ['type' => 'bool']
+                            'active' => ['type' => 'boolean'],
                         ],
                     ],
                 ])
                 ->execute();
         }
+    }
+
+    public function getElasticRecords(): array
+    {
+        $hits = $this->queryBuilder
+            ->index('companies')
+            ->size(10000)
+            ->body([
+                '_source' => ['_id', 'updated_at'],
+            ])
+            ->search();
+
+        return collect($hits)->mapWithKeys(function ($hit) {
+            return [$hit['_id'] => $hit['_source']['updated_at']];
+        })->toArray();
     }
 }

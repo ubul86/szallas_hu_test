@@ -88,7 +88,7 @@
     <DialogDeleteComponent
         :is-dialog-delete-open="isDialogDeleteOpen"
         @update:isDialogDeleteOpen="isDialogDeleteOpen = $event"
-        :item-id="editedItem?.id"
+        :item-id="editedItemId"
         @closeDelete="closeDelete"
     />
 
@@ -147,21 +147,7 @@ const headers = [
 const selected = ref([])
 
 const editedIndex = ref(-1)
-const editedItem = reactive({
-    name: '',
-    registration_number: '',
-    foundation_date: null,
-    activity: null,
-    active: false,
-})
-
-const defaultItem = {
-    name: '',
-    registration_number: '',
-    foundation_date: null,
-    activity: null,
-    active: false,
-}
+const editedItemId = ref(null);
 
 const tableLoadingItems = ref(true);
 
@@ -238,13 +224,13 @@ const isDialogDeleteOpen = ref(false);
 const dialogDelete = (item) => {
     isDialogDeleteOpen.value = true;
     editedIndex.value = companyStore.companies.indexOf(item)
-    Object.assign(editedItem, item)
+    editedItemId.value = item.id;
 };
 
 const closeDelete = async() => {
     isDialogDeleteOpen.value = false;
     await nextTick();
-    Object.assign(editedItem, defaultItem)
+    editedItemId.value = null;
     editedIndex.value = -1
 };
 

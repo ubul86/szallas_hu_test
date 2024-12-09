@@ -18,7 +18,15 @@ export const useCompanyStore = defineStore('company', {
         },
 
         async show(id) {
-            return await companyService.show(id);
+            const existingItem = this.companies.find(company => company.id === id);
+            if (existingItem) {
+                return existingItem;
+            }
+
+            const fetchedItem = await companyService.show(id);
+            this.companies.push(fetchedItem);
+            this.meta.total_items += 1;
+            return fetchedItem;
         },
 
         async store(item) {

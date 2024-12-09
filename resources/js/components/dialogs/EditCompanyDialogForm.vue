@@ -15,6 +15,7 @@ import DialogForm from './DialogForm.vue';
 import useForm from '@/composables/useForm.js';
 import { useCompanyStore } from '@/stores/company.store.js';
 import { useToast } from 'vue-toastification';
+import 'vuetify/styles';
 
 const { formErrors, resetErrors, handleApiError } = useForm();
 
@@ -25,7 +26,6 @@ const toast = useToast()
 const props = defineProps({
     dialogVisible: Boolean,
     editedIndex: Number,
-    users: Array,
 });
 
 const localDialogVisible = ref(props.dialogVisible);
@@ -35,17 +35,19 @@ const emit = defineEmits(['update:dialogVisible', 'save', 'close']);
 const title = ref('New Company');
 
 const editedItem = ref({
-    user_id: null,
-    description: '',
-    estimated_time: null,
-    used_time: null,
+    name: null,
+    registration_number: null,
+    foundation_date: null,
+    activity: null,
+    active: false
 })
 
 const defaultItem = {
-    user_id: null,
-    description: '',
-    estimated_time: null,
-    used_time: null,
+    name: null,
+    registration_number: null,
+    foundation_date: null,
+    activity: null,
+    active: false
 }
 
 watch(
@@ -66,7 +68,6 @@ watch(
 
         if (newVal >= 0) {
             const company = companyStore.companies[newVal];
-
             if (company) {
                 editedItem.value = {
                     ...company,
@@ -84,10 +85,9 @@ const handleCancel = () => {
 
 const handleSubmit = async (itemToSubmit) => {
     resetErrors();
-
     try {
-        if (props.editedIndex.value > -1) {
-            await companyStore.update(props.editedIndex.value, itemToSubmit);
+        if (props.editedIndex > -1) {
+            await companyStore.update(props.editedIndex, itemToSubmit);
             toast.success('You have successfully edited the item!');
         } else {
             await companyStore.store(itemToSubmit)
@@ -107,6 +107,34 @@ const handleSubmit = async (itemToSubmit) => {
 
 const fields = computed(() => [
     { model: 'name', component: 'v-text-field', props: { label: 'Name', error: !!formErrors.value.name, 'error-messages': formErrors.value.name || [] } },
+    { model: 'registration_number', component: 'v-text-field', props: { label: 'Registration Number', error: !!formErrors.value.registration_number, 'error-messages': formErrors.value.registration_number || [] } },
+    {
+        model: 'foundation_date',
+        component: 'v-date-input',
+        props: {
+            label: "Select a Foundation Date",
+            variant: "outlined",
+            persistentPlaceholder: true,
+            'model-value': editedItem.value.foundation_date
+        },
+    },
+    {
+        model: 'active',
+        component: 'v-select',
+        props: {
+            label: 'Active',
+            items: [
+                { title: 'Active', text: 'Active', value: true },
+                { title: 'Inactive', text: 'Inactive', value: false }
+            ],
+            'item-text': 'text',
+            'item-value': 'value',
+            error: !!formErrors.value.active,
+            'error-messages': formErrors.value.active || [],
+            returnObject: false
+        }
+    },
+    { model: 'activity', component: 'v-select', props: { label: 'Activity', error: !!formErrors.value.activity, items: ['Development', 'Design', 'Marketing', 'Sales'], 'error-messages': formErrors.value.activity || [] } },
 ]);
 
 </script>

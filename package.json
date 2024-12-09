@@ -7,14 +7,17 @@
         "watch": "vite build --watch"
     },
     "dependencies": {
+        "@date-io/date-fns": "^3.0.0",
+        "@date-io/dayjs": "^3.0.0",
         "@mdi/font": "^7.4.47",
         "axios": "^1.7.7",
+        "dayjs": "^1.11.13",
         "pinia": "^2.2.6",
         "sweetalert2": "^11.14.5",
         "vue": "^3.5.12",
         "vue-router": "^4.4.5",
         "vue-toastification": "^2.0.0-rc.5",
-        "vuetify": "^3.7.4"
+        "vuetify": "^3.7.5"
     },
     "devDependencies": {
         "@eslint/js": "^9.14.0",

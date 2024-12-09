@@ -207,12 +207,12 @@ const loadItems = async (params) => {
 }
 
 const companyFirstAddress = (item) => {
-    const firstAddress = item.addresses && item.addresses.length ? item.addresses[0] : [];
-    let concatenateAddress = '';
+    const firstAddress = item.addresses && item.addresses.length ? item.addresses[0] : null;
+    let concatenateAddress = 'N/A';
     if (firstAddress) {
         concatenateAddress = `${firstAddress.country} - ${firstAddress.city} - ${firstAddress.zip_code} - ${firstAddress.street_address}`
     }
-    return concatenateAddress ?? 'N/A';
+    return concatenateAddress;
 };
 
 const companyFirstOwner = (item) => {

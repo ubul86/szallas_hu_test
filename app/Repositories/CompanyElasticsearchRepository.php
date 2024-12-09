@@ -43,9 +43,22 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
         $page = $filters['page'] ?? 1;
         $from = ($page - 1) * $perPage;
 
+        $this->queryBuilder->index('companies');
+
+        if (!empty($filters['ids'])) {
+            $ids = explode(',', $filters['ids']);
+            $this->queryBuilder->body([
+                'query' => [
+                    'terms' => [
+                        '_id' => $ids
+                    ]
+                ]
+            ]);
+        } else {
+            $this->queryBuilder->matchAll();
+        }
+
         $response = $this->queryBuilder
-            ->index('companies')
-            ->matchAll()
             ->from($from)
             ->size($perPage)
             ->execute();

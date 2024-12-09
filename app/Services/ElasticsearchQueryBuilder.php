@@ -154,7 +154,7 @@ class ElasticsearchQueryBuilder
         return $response->getStatusCode() === 200;
     }
 
-    public function delete(): array
+    public function delete(): ?string
     {
 
         $response = $this->elasticsearch->delete($this->query);
@@ -163,7 +163,7 @@ class ElasticsearchQueryBuilder
             $response = $response->wait();
         }
 
-        return $response['result'] ?? [];
+        return $response['result'] ?? null;
     }
 
     public function search(): array

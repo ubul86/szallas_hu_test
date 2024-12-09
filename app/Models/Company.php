@@ -75,7 +75,7 @@ class Company extends Model
         return $query->with(['address', 'owner', 'employee']);
     }
 
-    public function getFoundationDateAttribute($value)
+    public function getFoundationDateAttribute(string $value): string
     {
         return Carbon::parse($value)->toDateString();
     }

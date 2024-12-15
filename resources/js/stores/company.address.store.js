@@ -17,29 +17,29 @@ export const useCompanyAddressStore = defineStore('companyAddress', {
             this.meta = data.meta;
         },
 
-        async show(id) {
+        async show(companyId, id) {
             const existingItem = this.company_addresses.find(companyAddress => companyAddress.id === id);
             if (existingItem) {
                 return existingItem;
             }
 
-            const fetchedItem = await companyAddressService.show(id);
+            const fetchedItem = await companyAddressService.show(companyId, id);
             this.company_addresses.push(fetchedItem);
             this.meta.total_items += 1;
             return fetchedItem;
         },
 
-        async store(item) {
-            const storedItem = await companyAddressService.store(item);
+        async store(companyId, item) {
+            const storedItem = await companyAddressService.store(companyId, item);
             this.company_addresses.push(storedItem);
         },
 
-        async update(index, item) {
-            this.company_addresses[index] = await companyAddressService.update(item);
+        async update(companyId, index, item) {
+            this.company_addresses[index] = await companyAddressService.update(companyId, item);
         },
 
-        async deleteItem(id) {
-            await companyAddressService.deleteItem(id);
+        async deleteItem(companyId, id) {
+            await companyAddressService.deleteItem(companyId, id);
             this.company_addresses = this.company_addresses.filter(companyAddress => companyAddress.id !== id);
         },
     },

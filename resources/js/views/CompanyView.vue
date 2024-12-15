@@ -61,15 +61,16 @@ const items = computed(() => [
 ]);
 
 const getComponentProps = (tab) => {
+    const companyId = company.value?.id;
     switch (tab) {
         case 'company':
             return { companyData: company.value };
         case 'company_address':
-            return { addresses: companyAddress.value };
+            return { addresses: companyAddress.value, companyId: companyId };
         case 'company_owners':
-            return { owners: company.value?.owners };
+            return { owners: company.value?.owners, companyId: companyId };
         case 'company_employees':
-            return { employees: company.value?.employees };
+            return { employees: company.value?.employees, companyId: companyId };
         default:
             return {};
     }

@@ -25,7 +25,7 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         return $query->paginate($perPage, ['*'], 'page', $page);
     }
 
-    public function show(int $id): CompanyAddress
+    public function show(int $companyId, int $id): CompanyAddress
     {
         try {
             return CompanyAddress::findOrFail($id);
@@ -34,7 +34,7 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         }
     }
 
-    public function store(array $data, int $companyId = null): CompanyAddress
+    public function store(int $companyId, array $data): CompanyAddress
     {
         try {
             $address = new CompanyAddress();
@@ -49,7 +49,7 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         }
     }
 
-    public function update(int $id, array $data): CompanyAddress
+    public function update(int $companyId, int $id, array $data): CompanyAddress
     {
         try {
             $company = CompanyAddress::findOrFail($id);
@@ -62,7 +62,7 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         }
     }
 
-    public function destroy(int $id): bool|null
+    public function destroy(int $companyId, int $id): bool|null
     {
         try {
             $company = CompanyAddress::findOrFail($id);

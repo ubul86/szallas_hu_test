@@ -12,7 +12,6 @@
 <script setup>
 import 'vuetify/styles';
 import { computed, ref, watch } from 'vue'
-import { useCompanyStore } from '@/stores/company.store.js';
 import { useToast } from 'vue-toastification';
 import DialogForm from './DialogForm.vue';
 import useForm from '@/composables/useForm.js';
@@ -20,7 +19,6 @@ import {useCompanyAddressStore} from "@/stores/company.address.store.js";
 
 const { formErrors, resetErrors, handleApiError } = useForm();
 
-const companyStore = useCompanyStore();
 const companyAddressStore = useCompanyAddressStore();
 
 const toast = useToast()
@@ -28,6 +26,7 @@ const toast = useToast()
 const props = defineProps({
     dialogVisible: Boolean,
     editedIndex: Number,
+    companyId: Number,
 });
 
 const localDialogVisible = ref(props.dialogVisible);
@@ -89,10 +88,10 @@ const handleSubmit = async (itemToSubmit) => {
     resetErrors();
     try {
          if (props.editedIndex > -1) {
-            await companyAddressStore.update(props.editedIndex, itemToSubmit);
+            await companyAddressStore.update(props.companyId, props.editedIndex, itemToSubmit);
             toast.success('You have successfully edited the item!');
         } else {
-            await companyAddressStore.store(itemToSubmit)
+            await companyAddressStore.store(props.companyId, itemToSubmit)
             toast.success('You have successfully created a new item!');
         }
 

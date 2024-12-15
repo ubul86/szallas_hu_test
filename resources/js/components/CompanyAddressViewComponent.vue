@@ -49,7 +49,7 @@
         </template>
     </v-data-table>
 
-    <edit-company-address-dialog-form :edited-index="editedIndex" :dialog-visible="dialog" @close="onClose"></edit-company-address-dialog-form>
+    <edit-company-address-dialog-form :edited-index="editedIndex" :dialog-visible="dialog" @close="onClose" :company-id="props.companyId"></edit-company-address-dialog-form>
 
     <DialogDeleteComponent
         :is-dialog-delete-open="isDialogDeleteOpen"

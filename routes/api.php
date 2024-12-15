@@ -7,9 +7,6 @@ use App\Http\Controllers\CompanyAddressController;
 use App\Http\Controllers\CompanyOwnerController;
 use App\Http\Controllers\CompanyEmployeeController;
 
-Route::get('/company/{company}/company-address', [CompanyAddressController::class, 'index']);
-Route::post('company/{company}/company-address', [CompanyAddressController::class, 'store']);
-
 Route::prefix('/company/{company}')
     ->middleware('verify.company.address')
     ->group(function () {

@@ -15,17 +15,9 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
      * @param array $filters
      * @return LengthAwarePaginator<CompanyAddress>
      */
-    public function index(array $filters = []): LengthAwarePaginator
+    public function index(int $companyId, array $filters = []): LengthAwarePaginator
     {
-        $query = CompanyAddress::with('company');
-
-        $collectedFilters = collect($filters);
-
-        if (!$collectedFilters->has('company_id')) {
-            throw new NotFoundHttpException('Company ID must be set!');
-        }
-
-        $query->where('company_id', $collectedFilters->get('company_id'));
+        $query = CompanyAddress::with('company')->where('company_id', $companyId);
 
         $perPage = $filters['itemsPerPage'] ?? 10;
         $page = $filters['page'] ?? 1;

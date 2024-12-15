@@ -10,12 +10,12 @@
 </template>
 
 <script setup>
+import 'vuetify/styles';
 import { computed, ref, watch } from 'vue'
-import DialogForm from './DialogForm.vue';
-import useForm from '@/composables/useForm.js';
 import { useCompanyStore } from '@/stores/company.store.js';
 import { useToast } from 'vue-toastification';
-import 'vuetify/styles';
+import DialogForm from './DialogForm.vue';
+import useForm from '@/composables/useForm.js';
 
 const { formErrors, resetErrors, handleApiError } = useForm();
 

@@ -11,7 +11,7 @@ interface CompanyAddressRepositoryInterface
      * @param array $filters
      * @return LengthAwarePaginator<CompanyAddress>
      */
-    public function index(array $filters = []): LengthAwarePaginator;
+    public function index(int $companyId, array $filters = []): LengthAwarePaginator;
     public function show(int $id): CompanyAddress;
     public function store(array $data, int $companyId = null): CompanyAddress;
     public function update(int $id, array $data): CompanyAddress;

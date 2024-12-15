@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCompanyAddressRequest;
 use App\Http\Requests\UpdateCompanyAddressRequest;
-use App\Repositories\CompanyAddressRepository;
+use App\Models\Company;
 use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -20,9 +20,14 @@ class CompanyAddressController extends Controller
         $this->companyAddressRepository = $companyAddressRepository;
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, Company $company): JsonResponse
     {
-        $models = $this->companyAddressRepository->index($request->all());
+
+        if (!$company) {
+            throw new ModelNotFoundException('There is no company with that ID');
+        }
+
+        $models = $this->companyAddressRepository->index($company->id, $request->all());
         return response()->json([
             'items' => $models->items(),
             'meta' => [

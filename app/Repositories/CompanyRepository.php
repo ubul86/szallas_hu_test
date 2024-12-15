@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Company;
 use App\Repositories\Interfaces\CompanyRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Exception;
@@ -13,13 +14,26 @@ use Illuminate\Support\Collection;
 class CompanyRepository implements CompanyRepositoryInterface
 {
     /**
-     * @param array $filters
-     * @return LengthAwarePaginator<Company>
+     * @var Builder<Company>
      */
+    protected Builder $model;
+
+    public function __construct()
+    {
+        $this->model = Company::query();
+    }
+
+    /**
+     * @return Builder<Company>
+     */
+    protected function query(): Builder
+    {
+        return Company::withRelations();
+    }
+
     public function index(array $filters = []): LengthAwarePaginator
     {
-        $query = Company::withRelations();
-
+        $query = $this->query();
         $filtersCollection = collect($filters);
 
         if (!empty($filters['ids'])) {
@@ -36,7 +50,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     public function show(int $id): Company
     {
         try {
-            $company = Company::withRelations()->where('id', $id)->first();
+            $company = $this->query()->findOrFail($id);
             if (!$company) {
                 throw new ModelNotFoundException('Company Not Found');
             }
@@ -49,7 +63,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     public function store(array $data): Company
     {
         try {
-            return Company::create($data);
+            return $this->query()->create($data);
         } catch (Exception $e) {
             throw new Exception('Failed to create Company: ' . $e->getMessage());
         }
@@ -58,7 +72,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     public function update(int $id, array $data): Company
     {
         try {
-            $company = Company::findOrFail($id);
+            $company = $this->query()->findOrFail($id);
             $company->update($data);
             return $company;
         } catch (ModelNotFoundException $e) {
@@ -71,8 +85,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     public function destroy(int $id): bool|null
     {
         try {
-            $company = Company::findOrFail($id);
-            return $company->delete();
+            return $this->query()->findOrFail($id)->delete();
         } catch (ModelNotFoundException $e) {
             throw new Exception('Company not found: ' . $e->getMessage());
         } catch (Exception $e) {
@@ -82,7 +95,7 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     public function checkExistsByRegistrationNumber(string $registrationNumber): bool
     {
-        return Company::where('registration_number', $registrationNumber)->exists();
+        return $this->query()->where('registration_number', $registrationNumber)->exists();
     }
 
     public function storeWithRelations(array $data): Company
@@ -91,7 +104,7 @@ class CompanyRepository implements CompanyRepositoryInterface
         try {
             $collectedData = collect($data);
 
-            $company = Company::create($collectedData->get('company', []));
+            $company = $this->query()->create($collectedData->get('company', []));
 
             (new Collection($collectedData->get('address', [])))->whenNotEmpty(function ($addresses) use ($company) {
                 $company->address()->createMany($addresses->toArray());
@@ -115,15 +128,11 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     public function findById(int $id): Company
     {
-        try {
-            return Company::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw $e;
-        }
+        return $this->query()->findOrFail($id);
     }
 
     public function getCompanyIds(): array
     {
-        return Company::pluck('updated_at', 'id')->toArray();
+        return $this->query()->pluck('updated_at', 'id')->toArray();
     }
 }

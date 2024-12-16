@@ -16,7 +16,7 @@
 ## 1. Get All Companies or a Selected Company
 
 **Endpoint:**  
-`GET /api/company`
+`GET /api/company/`
 
 Retrieve all companies or a selected list of companies by their IDs. This endpoint supports pagination through query parameters.
 
@@ -239,7 +239,7 @@ or an error message:
 ## 6. Get All Companies Address
 
 **Endpoint:**  
-`GET /api/company-address`
+`GET /api/company/{company_id}/company-address`
 
 Retrieve all company addresses. This endpoint supports pagination through query parameters.
 
@@ -247,7 +247,6 @@ Retrieve all company addresses. This endpoint supports pagination through query 
 
 | **Name**          | **Required** | **Type**                                | **Description**                                                 |
 |-------------------|--------------|-----------------------------------------|-----------------------------------------------------------------|
-| `company_id`      | Required     | Integer                                 | Need to specific the company from which we want to retrieve the company_address  |
 | `itemsPerPage`    | Optional     | Integer                                 | Number of companies per page for pagination (default: 10).      |
 | `page`            | Optional     | Integer                                 | The page number to retrieve (default: 1).                       |
 
@@ -309,7 +308,7 @@ or an error message:
 ## 7. Show Information from Company Address
 
 **Endpoint:**  
-`GET /api/company-address/{id}`
+`GET /api/company/{company_id}/company-address/{id}`
 
 Retrieve details for a specific company address by its ID.
 
@@ -349,7 +348,7 @@ or an error message:
 ## 8. Create a New Company Address
 
 **Endpoint:**  
-`POST /api/company-address`
+`POST /api/company/{company_id}/company-address`
 
 Create a new company address. The request body must contain the following fields:
 
@@ -357,7 +356,6 @@ Create a new company address. The request body must contain the following fields
 
 | **Name**            | **Required** | **Type**         | **Description**                                                  |
 |---------------------|--------------|------------------|------------------------------------------------------------------|
-| `company_id`        | Optional     | Integer			| The ID of the associated company (nullable, references the `company` table). |
 | `country`           | Optional     | String (max 100) | The country of the company address.                              |
 | `city`              | Optional     | String (max 100) | The city of the company address.                                 |
 | `zip_code`          | Optional     | String (max 20)  | The postal code of the company address.                          |
@@ -402,7 +400,7 @@ or an error message:
 ## 9. Update a New Company Address
 
 **Endpoint:**  
-`PUT /api/company-address/2`
+`PUT /api/company/{company_id}/company-address/{id}`
 
 Update a new company address. The request body must contain the following fields:
 
@@ -454,7 +452,7 @@ or an error message:
 ## 10. Delete a Company Address
 
 **Endpoint:**  
-`DELETE /api/company-address/{id}`
+`DELETE /api/company/{company_id}/company-address/{id}`
 
 Delete a company address by its ID.
 

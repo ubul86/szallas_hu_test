@@ -14,7 +14,7 @@ Route::prefix('/company/{company}')
         Route::get('/company-address/{id}', [CompanyAddressController::class, 'show']);
         Route::post('/company-address', [CompanyAddressController::class, 'store']);
         Route::put('/company-address/{id}', [CompanyAddressController::class, 'update']);
-        Route::delete('/company-address/{id}}', [CompanyAddressController::class, 'destroy']);
+        Route::delete('/company-address/{id}', [CompanyAddressController::class, 'destroy']);
 });
 
 

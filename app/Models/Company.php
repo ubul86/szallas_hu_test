@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 
 class Company extends Model
 {
@@ -40,7 +41,7 @@ class Company extends Model
         parent::boot();
 
         static::saving(function ($model) {
-            if ($model->isDirty('foundation_date') && $model->getOriginal('foundation_date') !== null) {
+            if ($model->isDirty('foundation_date') && $model->getOriginal('foundation_date') !== null && $model->exists) {
                 throw new \Exception('The foundation_date field cannot be modified once it has a value.');
             }
         });
@@ -72,5 +73,10 @@ class Company extends Model
     public function scopeWithRelations(Builder $query): Builder
     {
         return $query->with(['address', 'owner', 'employee']);
+    }
+
+    public function getFoundationDateAttribute(string $value): string
+    {
+        return Carbon::parse($value)->toDateString();
     }
 }

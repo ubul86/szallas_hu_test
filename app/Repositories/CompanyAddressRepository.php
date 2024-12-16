@@ -15,17 +15,9 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
      * @param array $filters
      * @return LengthAwarePaginator<CompanyAddress>
      */
-    public function index(array $filters = []): LengthAwarePaginator
+    public function index(int $companyId, array $filters = []): LengthAwarePaginator
     {
-        $query = CompanyAddress::with('company');
-
-        $collectedFilters = collect($filters);
-
-        if (!$collectedFilters->has('company_id')) {
-            throw new NotFoundHttpException('Company ID must be set!');
-        }
-
-        $query->where('company_id', $collectedFilters->get('company_id'));
+        $query = CompanyAddress::with('company')->where('company_id', $companyId);
 
         $perPage = $filters['itemsPerPage'] ?? 10;
         $page = $filters['page'] ?? 1;
@@ -33,7 +25,7 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         return $query->paginate($perPage, ['*'], 'page', $page);
     }
 
-    public function show(int $id): CompanyAddress
+    public function show(int $companyId, int $id): CompanyAddress
     {
         try {
             return CompanyAddress::findOrFail($id);
@@ -42,7 +34,7 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         }
     }
 
-    public function store(array $data, int $companyId = null): CompanyAddress
+    public function store(int $companyId, array $data): CompanyAddress
     {
         try {
             $address = new CompanyAddress();
@@ -57,7 +49,7 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         }
     }
 
-    public function update(int $id, array $data): CompanyAddress
+    public function update(int $companyId, int $id, array $data): CompanyAddress
     {
         try {
             $company = CompanyAddress::findOrFail($id);
@@ -70,7 +62,7 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
         }
     }
 
-    public function destroy(int $id): bool|null
+    public function destroy(int $companyId, int $id): bool|null
     {
         try {
             $company = CompanyAddress::findOrFail($id);

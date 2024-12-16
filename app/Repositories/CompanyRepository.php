@@ -49,7 +49,11 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     public function show(int $id): Company
     {
-        return $this->query()->findOrFail($id);
+        try {
+            return $this->query()->findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw new ModelNotFoundException($e->getMessage());
+        }
     }
 
     public function store(array $data): Company

@@ -17,7 +17,16 @@ Route::prefix('/company/{company}')
         Route::delete('/company-address/{id}', [CompanyAddressController::class, 'destroy']);
 });
 
+Route::prefix('/company/{company}')
+    ->middleware('verify.company.owner')
+    ->group(function () {
+        Route::get('/company-owner', [CompanyOwnerController::class, 'index']);
+        Route::get('/company-owner/{id}', [CompanyOwnerController::class, 'show']);
+        Route::post('/company-owner', [CompanyOwnerController::class, 'store']);
+        Route::put('/company-owner/{id}', [CompanyOwnerController::class, 'update']);
+        Route::delete('/company-owner/{id}', [CompanyOwnerController::class, 'destroy']);
+    });
+
 
 Route::apiResource('company', CompanyController::class);
-Route::apiResource('company-owner', CompanyOwnerController::class);
 Route::apiResource('company-employee', CompanyEmployeeController::class);

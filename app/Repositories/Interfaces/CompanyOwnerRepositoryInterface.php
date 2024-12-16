@@ -11,9 +11,10 @@ interface CompanyOwnerRepositoryInterface
      * @param array $filters
      * @return LengthAwarePaginator<CompanyOwner>
      */
-    public function index(array $filters = []): LengthAwarePaginator;
-    public function show(int $id): CompanyOwner;
-    public function store(array $data, int $companyId = null): CompanyOwner;
-    public function update(int $id, array $data): CompanyOwner;
-    public function destroy(int $id): bool|null;
+    public function index(int $companyId, array $filters = []): LengthAwarePaginator;
+    public function show(int $companyId, int $id): CompanyOwner;
+    public function store(int $companyId, array $data): CompanyOwner;
+    public function update(int $companyId, int $id, array $data): CompanyOwner;
+    public function destroy(int $companyId, int $id): bool|null;
+    public function validateOwnership(int $companyId, int $ownerId): void;
 }

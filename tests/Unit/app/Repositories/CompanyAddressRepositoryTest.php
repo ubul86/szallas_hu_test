@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class CompanyAddressRepositoryTest extends TestCase
 {
     use RefreshDatabase;
+
     protected CompanyAddressRepository $companyAddressRepository;
 
     protected Company $company;

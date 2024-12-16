@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCompanyOwnerRequest;
 use App\Http\Requests\UpdateCompanyOwnerRequest;
-use App\Repositories\CompanyOwnerRepository;
-use App\Repositories\Interfaces\CompanyOwnerRepositoryInterface;
+use App\Models\Company;
+use App\Services\CompanyOwnerService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,16 +13,16 @@ use Exception;
 
 class CompanyOwnerController extends Controller
 {
-    protected CompanyOwnerRepositoryInterface $companyOwnerRepository;
+    protected CompanyOwnerService $companyOwnerService;
 
-    public function __construct(CompanyOwnerRepositoryInterface $companyOwnerRepository)
+    public function __construct(CompanyOwnerService $companyOwnerService)
     {
-        $this->companyOwnerRepository = $companyOwnerRepository;
+        $this->companyOwnerService = $companyOwnerService;
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, Company $company): JsonResponse
     {
-        $models = $this->companyOwnerRepository->index($request->all());
+        $models = $this->companyOwnerService->index($company->id, $request->all());
         return response()->json([
             'items' => $models->items(),
             'meta' => [
@@ -34,32 +34,32 @@ class CompanyOwnerController extends Controller
         ]);
     }
 
-    public function store(StoreCompanyOwnerRequest $request): JsonResponse
+    public function store(Company $company, StoreCompanyOwnerRequest $request): JsonResponse
     {
         try {
             $validated = $request->validated();
-            $companyOwner = $this->companyOwnerRepository->store($validated);
+            $companyOwner = $this->companyOwnerService->store($company->id, $validated);
             return response()->json($companyOwner, 201);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], 400);
         }
     }
 
-    public function show(int $id): JsonResponse
+    public function show(Company $company, int $id): JsonResponse
     {
         try {
-            $companyOwner = $this->companyOwnerRepository->show($id);
+            $companyOwner = $this->companyOwnerService->show($company->id, $id);
             return response()->json($companyOwner);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], 404);
         }
     }
 
-    public function update(UpdateCompanyOwnerRequest $request, int $id): JsonResponse
+    public function update(Company $company, UpdateCompanyOwnerRequest $request, int $id): JsonResponse
     {
         try {
             $validated = $request->validated();
-            $companyOwner = $this->companyOwnerRepository->update($id, $validated);
+            $companyOwner = $this->companyOwnerService->update($company->id, $id, $validated);
             return response()->json($companyOwner);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], 404);
@@ -68,10 +68,10 @@ class CompanyOwnerController extends Controller
         }
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(Company $company, int $id): JsonResponse
     {
         try {
-            $this->companyOwnerRepository->destroy($id);
+            $this->companyOwnerService->destroy($company->id, $id);
             return response()->json(['message' => 'Company Owner deleted successfully']);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], 404);

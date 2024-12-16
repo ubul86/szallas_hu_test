@@ -48,13 +48,13 @@ class SyncCompaniesToElasticsearch extends Command
         if (!empty($toDataSync)) {
             $companiesToSync = Company::where(function ($query) {
                 $query->where('updated_at', '>', now()->subDay())
-                    ->orWhereHas('addresses', function ($q) {
+                    ->orWhereHas('address', function ($q) {
                         $q->where('updated_at', '>', now()->subDay());
                     })
-                    ->orWhereHas('owners', function ($q) {
+                    ->orWhereHas('owner', function ($q) {
                         $q->where('updated_at', '>', now()->subDay());
                     })
-                    ->orWhereHas('employees', function ($q) {
+                    ->orWhereHas('employee', function ($q) {
                         $q->where('updated_at', '>', now()->subDay());
                     });
             })->withRelations()->get()->chunk(100);

@@ -101,9 +101,7 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
         $this->queryBuilder
             ->index('companies')
             ->id($company->id)
-            ->body([
-                'doc' => $company->toArray(),
-            ])
+            ->body($company->toArray())
             ->save();
     }
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyAddressRequest;
 use App\Http\Requests\UpdateCompanyAddressRequest;
 use App\Models\Company;
-use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
+use App\Services\CompanyAddressService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,16 +13,16 @@ use Exception;
 
 class CompanyAddressController extends Controller
 {
-    protected CompanyAddressRepositoryInterface $companyAddressRepository;
+    protected CompanyAddressService $companyAddressService;
 
-    public function __construct(CompanyAddressRepositoryInterface $companyAddressRepository)
+    public function __construct(CompanyAddressService $companyAddressService)
     {
-        $this->companyAddressRepository = $companyAddressRepository;
+        $this->companyAddressService = $companyAddressService;
     }
 
     public function index(Request $request, Company $company): JsonResponse
     {
-        $models = $this->companyAddressRepository->index($company->id, $request->all());
+        $models = $this->companyAddressService->index($company->id, $request->all());
         return response()->json([
             'items' => $models->items(),
             'meta' => [
@@ -38,7 +38,7 @@ class CompanyAddressController extends Controller
     {
         try {
             $validated = $request->validated();
-            $companyAddress = $this->companyAddressRepository->store($company->id, $validated);
+            $companyAddress = $this->companyAddressService->store($company->id, $validated);
             return response()->json($companyAddress, 201);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], 400);
@@ -48,7 +48,7 @@ class CompanyAddressController extends Controller
     public function show(Company $company, int $id): JsonResponse
     {
         try {
-            $companyAddress = $this->companyAddressRepository->show($company->id, $id);
+            $companyAddress = $this->companyAddressService->show($company->id, $id);
             return response()->json($companyAddress);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], 404);
@@ -59,7 +59,7 @@ class CompanyAddressController extends Controller
     {
         try {
             $validated = $request->validated();
-            $companyAddress = $this->companyAddressRepository->update($company->id, $id, $validated);
+            $companyAddress = $this->companyAddressService->update($company->id, $id, $validated);
             return response()->json($companyAddress);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], 404);
@@ -71,7 +71,7 @@ class CompanyAddressController extends Controller
     public function destroy(Company $company, int $id): JsonResponse
     {
         try {
-            $this->companyAddressRepository->destroy($company->id, $id);
+            $this->companyAddressService->destroy($company->id, $id);
             return response()->json(['message' => 'Company Address deleted successfully']);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], 404);

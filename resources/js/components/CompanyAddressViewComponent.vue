@@ -51,22 +51,23 @@
 
     <edit-company-address-dialog-form :edited-index="editedIndex" :dialog-visible="dialog" @close="onClose" :company-id="props.companyId"></edit-company-address-dialog-form>
 
-    <DialogDeleteComponent
+    <DialogAddressDeleteComponent
         :is-dialog-delete-open="isDialogDeleteOpen"
         @update:isDialogDeleteOpen="isDialogDeleteOpen = $event"
         :item-id="editedItemId"
         @closeDelete="closeDelete"
+        :company-id="props.companyId"
     />
 
 </template>
 
 <script setup>
-import {ref, computed, nextTick, onMounted, onBeforeUnmount, watch} from 'vue'
-import DialogDeleteComponent from '@/components/dialogs/DialogDeleteComponent.vue'
+import {ref, computed, nextTick, onMounted, onBeforeUnmount} from 'vue'
 import ToggleHeaderComponent from '@/components/ToggleHeaderComponent.vue'
 import { useDisplay } from 'vuetify'
 import EditCompanyAddressDialogForm from "@/components/dialogs/EditCompanyAddressDialogForm.vue";
 import {useCompanyAddressStore} from "@/stores/company.address.store.js";
+import DialogAddressDeleteComponent from "@/components/dialogs/DialogAddressDeleteComponent.vue";
 
 const isMobileView = ref(window.innerWidth < 960);
 
@@ -90,21 +91,13 @@ const props = defineProps({
     companyId: Number,
 });
 
-const localAddresses = ref([]);
-
-watch(
-    () => props.addresses,
-    (newVal) => {
-        localAddresses.value = newVal;
-    },
-    {immediate: true}
-);
-
 const { smAndDown } = useDisplay()
 
 const dialog = ref(false)
 
 const companyAddressStore = useCompanyAddressStore();
+
+const localAddresses = computed(() => companyAddressStore.company_addresses);
 
 const headers = [
     {

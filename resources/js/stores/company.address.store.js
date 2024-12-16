@@ -40,7 +40,7 @@ export const useCompanyAddressStore = defineStore('companyAddress', {
 
         async deleteItem(companyId, id) {
             await companyAddressService.deleteItem(companyId, id);
-            this.company_addresses = this.company_addresses.filter(companyAddress => companyAddress.id !== id);
+            this.company_addresses = [...this.company_addresses.filter(companyAddress => companyAddress.id !== id)];
         },
     },
 });

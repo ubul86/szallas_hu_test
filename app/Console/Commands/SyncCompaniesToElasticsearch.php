@@ -46,9 +46,18 @@ class SyncCompaniesToElasticsearch extends Command
         }
 
         if (!empty($toDataSync)) {
-            $companiesToSync = Company::whereIn('id', $toDataSync)
-                ->where('updated_at', '>', now()->subDay())
-                ->withRelations()->get()->chunk(100);
+            $companiesToSync = Company::where(function ($query) {
+                $query->where('updated_at', '>', now()->subDay())
+                    ->orWhereHas('addresses', function ($q) {
+                        $q->where('updated_at', '>', now()->subDay());
+                    })
+                    ->orWhereHas('owners', function ($q) {
+                        $q->where('updated_at', '>', now()->subDay());
+                    })
+                    ->orWhereHas('employees', function ($q) {
+                        $q->where('updated_at', '>', now()->subDay());
+                    });
+            })->withRelations()->get()->chunk(100);
             foreach ($companiesToSync as $chunk) {
                 BulkIndexCompaniesJob::dispatch($chunk);
             }

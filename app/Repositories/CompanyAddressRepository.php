@@ -27,6 +27,8 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
 
     public function show(int $companyId, int $id): CompanyAddress
     {
+        $this->validateOwnership($companyId, $id);
+
         try {
             return CompanyAddress::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -51,6 +53,9 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
 
     public function update(int $companyId, int $id, array $data): CompanyAddress
     {
+
+        $this->validateOwnership($companyId, $id);
+
         try {
             $company = CompanyAddress::findOrFail($id);
             $company->update($data);
@@ -64,6 +69,9 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
 
     public function destroy(int $companyId, int $id): bool|null
     {
+
+        $this->validateOwnership($companyId, $id);
+
         try {
             $company = CompanyAddress::findOrFail($id);
             return $company->delete();
@@ -71,6 +79,17 @@ class CompanyAddressRepository implements CompanyAddressRepositoryInterface
             throw new Exception('Company Address not found: ' . $e->getMessage());
         } catch (Exception $e) {
             throw new Exception('Failed to delete Company Address: ' . $e->getMessage());
+        }
+    }
+
+    public function validateOwnership(int $companyId, int $addressId): void
+    {
+        $address = CompanyAddress::where('id', $addressId)
+            ->where('company_id', $companyId)
+            ->first();
+
+        if (!$address) {
+            throw new ModelNotFoundException('The specified address does not belong to the given company.');
         }
     }
 }

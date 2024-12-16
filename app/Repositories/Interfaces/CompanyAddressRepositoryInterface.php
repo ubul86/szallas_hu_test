@@ -16,4 +16,5 @@ interface CompanyAddressRepositoryInterface
     public function store(int $companyId, array $data): CompanyAddress;
     public function update(int $companyId, int $id, array $data): CompanyAddress;
     public function destroy(int $companyId, int $id): bool|null;
+    public function validateOwnership(int $companyId, int $addressId): void;
 }

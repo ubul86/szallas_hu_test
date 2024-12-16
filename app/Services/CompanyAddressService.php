@@ -84,4 +84,9 @@ class CompanyAddressService
     {
         return $this->companyAddressRepository->show($companyId, $id);
     }
+
+    public function validateOwnership(int $companyId, int $addressId): void
+    {
+        $this->companyAddressRepository->validateOwnership($companyId, $addressId);
+    }
 }

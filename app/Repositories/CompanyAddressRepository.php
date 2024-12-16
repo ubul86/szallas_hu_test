@@ -7,7 +7,6 @@ use App\Repositories\Interfaces\CompanyAddressRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CompanyAddressRepository implements CompanyAddressRepositoryInterface
 {

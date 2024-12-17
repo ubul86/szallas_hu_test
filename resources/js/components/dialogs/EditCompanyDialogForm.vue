@@ -6,6 +6,7 @@
         :dialog-visible="localDialogVisible"
         @cancel="handleCancel"
         @submit="handleSubmit"
+        :is-loading="isLoading"
     />
 </template>
 
@@ -33,6 +34,8 @@ const localDialogVisible = ref(props.dialogVisible);
 const emit = defineEmits(['update:dialogVisible', 'save', 'close']);
 
 const title = ref('New Company');
+
+const isLoading = ref(false);
 
 const editedItem = ref({
     name: null,
@@ -85,6 +88,7 @@ const handleCancel = () => {
 
 const handleSubmit = async (itemToSubmit) => {
     resetErrors();
+    isLoading.value = true;
     try {
         if (props.editedIndex > -1) {
             await companyStore.update(props.editedIndex, itemToSubmit);
@@ -101,7 +105,9 @@ const handleSubmit = async (itemToSubmit) => {
         handleApiError(error);
         toast.error(error.response.data.message);
     }
-
+    finally {
+        isLoading.value = false;
+    }
 };
 
 

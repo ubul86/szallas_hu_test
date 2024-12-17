@@ -6,6 +6,7 @@ const props = defineProps({
     title: String,
     fields: Array,
     formData: Object,
+    isLoading: Boolean
 });
 
 const emit = defineEmits(['update:dialogVisible','update:formData', 'submit', 'cancel']);
@@ -64,8 +65,8 @@ const handleSubmit = () => {
             </v-card-text>
             <v-card-actions>
                 <v-spacer />
-                <v-btn color="blue-darken-1" variant="text" @click="closeDialog">Cancel</v-btn>
-                <v-btn color="blue-darken-1" variant="text" @click="handleSubmit">Save</v-btn>
+                <v-btn color="blue-darken-1" variant="text" @click="closeDialog" :disabled="isLoading">Cancel</v-btn>
+                <v-btn color="blue-darken-1" variant="text" @click="handleSubmit" :disabled="isLoading">Save</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

@@ -27,6 +27,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useCompanyStore } from '@/stores/company.store.js';
 import { useCompanyAddressStore} from "@/stores/company.address.store.js";
+import { useCompanyOwnerStore} from "@/stores/company.owner.store.js";
 
 import CompanyViewComponent from '@/components/CompanyViewComponent.vue';
 import CompanyAddressViewComponent from '@/components/CompanyAddressViewComponent.vue';
@@ -35,6 +36,7 @@ import CompanyEmployeeViewComponent from '@/components/CompanyEmployeeViewCompon
 
 const companyStore = useCompanyStore();
 const companyAddressStore = useCompanyAddressStore();
+const companyOwnerStore = useCompanyOwnerStore();
 
 const activeTab = ref('company');
 const route = useRoute();
@@ -46,8 +48,11 @@ onMounted(async () => {
     company.value = await companyStore.show(id);
 
     if (company.value?.id) {
-        await companyAddressStore.fetchItems(company.value.id)
+        await companyOwnerStore.fetchItems(company.value.id)
         companyAddress.value = companyAddressStore.company_addresses;
+
+        await companyOwnerStore.fetchItems(company.value.id)
+        companyAddress.value = companyOwnerStore.company_owners;
     }
 });
 

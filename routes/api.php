@@ -27,6 +27,14 @@ Route::prefix('/company/{company}')
         Route::delete('/company-owner/{id}', [CompanyOwnerController::class, 'destroy']);
     });
 
+Route::prefix('/company/{company}')
+    ->middleware('verify.company.employee')
+    ->group(function () {
+        Route::get('/company-employee', [CompanyEmployeeController::class, 'index']);
+        Route::get('/company-employee/{id}', [CompanyEmployeeController::class, 'show']);
+        Route::post('/company-employee', [CompanyEmployeeController::class, 'store']);
+        Route::put('/company-employee/{id}', [CompanyEmployeeController::class, 'update']);
+        Route::delete('/company-employee/{id}', [CompanyEmployeeController::class, 'destroy']);
+    });
 
 Route::apiResource('company', CompanyController::class);
-Route::apiResource('company-employee', CompanyEmployeeController::class);

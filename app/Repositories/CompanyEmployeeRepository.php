@@ -14,9 +14,9 @@ class CompanyEmployeeRepository implements CompanyEmployeeRepositoryInterface
      * @param array $filters
      * @return LengthAwarePaginator<CompanyEmployee>
      */
-    public function index(array $filters = []): LengthAwarePaginator
+    public function index(int $companyId, array $filters = []): LengthAwarePaginator
     {
-        $query = CompanyEmployee::with('company');
+        $query = CompanyEmployee::with('company')->where('company_id', $companyId);
 
         $perPage = $filters['itemsPerPage'] ?? 10;
         $page = $filters['page'] ?? 1;
@@ -24,8 +24,10 @@ class CompanyEmployeeRepository implements CompanyEmployeeRepositoryInterface
         return $query->paginate($perPage, ['*'], 'page', $page);
     }
 
-    public function show(int $id): CompanyEmployee
+    public function show(int $companyId, int $id): CompanyEmployee
     {
+        $this->validateOwnership($companyId, $id);
+
         try {
             return CompanyEmployee::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -33,23 +35,26 @@ class CompanyEmployeeRepository implements CompanyEmployeeRepositoryInterface
         }
     }
 
-    public function store(array $data, int $companyId = null): CompanyEmployee
+    public function store(int $companyId, array $data): CompanyEmployee
     {
         try {
-            $employee = new CompanyEmployee();
+            $companyEmployee = new CompanyEmployee();
 
-            $employee->fill($data);
-            $employee->company_id = $companyId;
-            $employee->save();
+            $companyEmployee->fill($data);
+            $companyEmployee->company_id = $companyId;
+            $companyEmployee->save();
 
-            return $employee;
+            return $companyEmployee;
         } catch (Exception $e) {
             throw new Exception('Failed to create Company Employee: ' . $e->getMessage());
         }
     }
 
-    public function update(int $id, array $data): CompanyEmployee
+    public function update(int $companyId, int $id, array $data): CompanyEmployee
     {
+
+        $this->validateOwnership($companyId, $id);
+
         try {
             $companyEmployee = CompanyEmployee::findOrFail($id);
             $companyEmployee->update($data);
@@ -61,8 +66,11 @@ class CompanyEmployeeRepository implements CompanyEmployeeRepositoryInterface
         }
     }
 
-    public function destroy(int $id): bool|null
+    public function destroy(int $companyId, int $id): bool|null
     {
+
+        $this->validateOwnership($companyId, $id);
+
         try {
             $companyEmployee = CompanyEmployee::findOrFail($id);
             return $companyEmployee->delete();
@@ -70,6 +78,17 @@ class CompanyEmployeeRepository implements CompanyEmployeeRepositoryInterface
             throw new Exception('Company Employee not found: ' . $e->getMessage());
         } catch (Exception $e) {
             throw new Exception('Failed to delete Company Employee: ' . $e->getMessage());
+        }
+    }
+
+    public function validateOwnership(int $companyId, int $employeeId): void
+    {
+        $employee = CompanyEmployee::where('id', $employeeId)
+            ->where('company_id', $companyId)
+            ->first();
+
+        if (!$employee) {
+            throw new ModelNotFoundException('The specified employee does not belong to the given company.');
         }
     }
 }

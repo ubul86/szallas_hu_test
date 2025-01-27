@@ -1,0 +1,5 @@
+sonar.projectKey=laravel_project
+sonar.sources=./app, ./tests, ./routes, ./database
+sonar.host.url=http://sonarqube:9000
+sonar.login=sqp_6c464030619efea4ee196fbaa96031a46b92011d
+sonar.php.coverage.reportPaths=tests/_output/coverage.xml

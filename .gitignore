@@ -18,3 +18,9 @@ yarn-error.log
 /.vscode
 /cache
 .env.testing
+sonar-project.properties
+/tests/_output
+.phpunit.result.cache
+.phpunit.cache
+.cache
+.scannerwork

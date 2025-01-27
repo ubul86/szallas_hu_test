@@ -14,6 +14,7 @@ class BroadcastServiceProvider extends ServiceProvider
     {
         Broadcast::routes();
 
+        // NOSONAR
         require base_path('routes/channels.php');
     }
 }

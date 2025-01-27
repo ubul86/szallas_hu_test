@@ -115,5 +115,7 @@
         <severity>0</severity>
     </rule>
 
+    <config name="installed_paths" value="../../slevomat/coding-standard"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
 
 </ruleset>

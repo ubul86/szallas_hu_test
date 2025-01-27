@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use App\Models\CompanyOwner;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Company;
 
 class VerifyCompanyOwnerOwnership
 {

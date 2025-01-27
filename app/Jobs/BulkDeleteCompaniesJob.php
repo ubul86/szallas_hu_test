@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\Company;
 use Elastic\Elasticsearch\Client as ElasticsearchClient;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class Company extends Model
 {
@@ -42,7 +42,7 @@ class Company extends Model
 
         static::saving(function ($model) {
             if ($model->isDirty('foundation_date') && $model->getOriginal('foundation_date') !== null && $model->exists) {
-                throw new \Exception('The foundation_date field cannot be modified once it has a value.');
+                throw ValidationException::withMessages(['foundation_date' => ['The foundation_date field cannot be modified once it has a value.'],]);
             }
         });
     }

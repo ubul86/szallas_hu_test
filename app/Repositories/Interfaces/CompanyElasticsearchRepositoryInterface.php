@@ -4,8 +4,6 @@ namespace App\Repositories\Interfaces;
 
 use App\Models\Company;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Http\Promise\Promise;
-use Elastic\Elasticsearch\Response\Elasticsearch as ElasticsearchResponse;
 
 interface CompanyElasticsearchRepositoryInterface
 {

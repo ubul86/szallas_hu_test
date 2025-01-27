@@ -48,8 +48,7 @@ class CompanyService
 
     public function storeWithRelations(array $data): Company
     {
-        $company = $this->companyRepository->storeWithRelations($data);
-        return $company;
+        return $this->companyRepository->storeWithRelations($data);
     }
 
     public function update(int $id, array $data): Company

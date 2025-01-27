@@ -8,5 +8,4 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class UserRepositoryTest extends TestCase
 {
     use RefreshDatabase;
-
 }

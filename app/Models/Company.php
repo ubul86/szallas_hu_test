@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {

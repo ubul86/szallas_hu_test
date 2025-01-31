@@ -4,6 +4,7 @@ namespace App\Infrastructure\Elasticsearch;
 
 use Elastic\Elasticsearch\Client as ElasticClient;
 use Http\Promise\Promise;
+use InvalidArgumentException;
 
 class ElasticsearchQueryBuilder
 {
@@ -78,7 +79,7 @@ class ElasticsearchQueryBuilder
         $condition = match ($operator) {
             '=' => ['term' => [$field => $value]],
             '!=' => ['bool' => ['must_not' => ['term' => [$field => $value]]]],
-            default => throw new \InvalidArgumentException("Unsupported operator: $operator"),
+            default => throw new InvalidArgumentException("Unsupported operator: $operator"),
         };
 
         $this->query['body']['query']['bool']['filter'][] = $condition;

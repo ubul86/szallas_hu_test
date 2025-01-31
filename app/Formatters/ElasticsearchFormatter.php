@@ -6,18 +6,20 @@ class ElasticsearchFormatter
 {
     public static function format(array $data): array
     {
+        $collection = collect($data);
+
         return [
-            'id' => $data['id'] ?? null,
-            'name' => $data['name'] ?? null,
-            'registration_number' => $data['registration_number'] ?? null,
-            'foundation_date' => $data['foundation_date'] ?? null,
-            'activity' => $data['activity'] ?? null,
-            'active' => $data['active'] ?? null,
-            'created_at' => $data['created_at'] ?? null,
-            'updated_at' => $data['updated_at'] ?? null,
-            'addresses' => $data['address'] ?? [],
-            'employees' => $data['employee'] ?? [],
-            'owners' => $data['owner'] ?? [],
+            'id' => $collection->get('id'),
+            'name' => $collection->get('name'),
+            'registration_number' => $collection->get('registration_number'),
+            'foundation_date' => $collection->get('foundation_date'),
+            'activity' => $collection->get('activity'),
+            'active' => $collection->get('active'),
+            'created_at' => $collection->get('created_at'),
+            'updated_at' => $collection->get('updated_at'),
+            'addresses' => $collection->get('address', []),
+            'employees' => $collection->get('employee', []),
+            'owners' => $collection->get('owner', []),
         ];
     }
 }

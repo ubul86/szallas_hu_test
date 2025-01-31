@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Infrastructure\Elasticsearch;
 
 use Elastic\Elasticsearch\Client as ElasticClient;
 use Http\Promise\Promise;

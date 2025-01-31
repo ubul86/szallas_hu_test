@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
+use App\Infrastructure\Elasticsearch\ElasticsearchQueryBuilder;
 use App\Models\Company;
 use App\Repositories\Interfaces\CompanyElasticsearchRepositoryInterface;
-use App\Services\ElasticsearchQueryBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 

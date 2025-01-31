@@ -24,3 +24,5 @@ sonar-project.properties
 .phpunit.cache
 .cache
 .scannerwork
+.deptrac.cache
+myreport

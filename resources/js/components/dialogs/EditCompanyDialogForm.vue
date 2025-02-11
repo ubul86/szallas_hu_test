@@ -14,6 +14,7 @@
 import 'vuetify/styles';
 import { computed, ref, watch } from 'vue'
 import { useCompanyStore } from '@/stores/company.store.js';
+import useEditDialogForm from '@/composables/useEditDialogForm.js';
 import { useToast } from 'vue-toastification';
 import DialogForm from './DialogForm.vue';
 import useForm from '@/composables/useForm.js';
@@ -29,21 +30,7 @@ const props = defineProps({
     editedIndex: Number,
 });
 
-const localDialogVisible = ref(props.dialogVisible);
-
-const emit = defineEmits(['update:dialogVisible', 'save', 'close']);
-
 const title = ref('New Company');
-
-const isLoading = ref(false);
-
-const editedItem = ref({
-    name: null,
-    registration_number: null,
-    foundation_date: null,
-    activity: null,
-    active: false
-})
 
 const defaultItem = {
     name: null,
@@ -53,10 +40,28 @@ const defaultItem = {
     active: false
 }
 
+const {
+    isLoading,
+    localDialogVisible,
+    editedItem,
+    openDialog,
+    handleCancel,
+    handleSubmit
+} = useEditDialogForm(
+    defaultItem,
+    companyStore,
+    toast,
+    resetErrors,
+    handleApiError
+);
+
 watch(
     () => props.dialogVisible,
     (newVal) => {
-        localDialogVisible.value = newVal;
+        openDialog(newVal, props.editedIndex, (idx) => {
+            const company = companyStore.companies[idx];
+            return company ? { ...company } : { ...defaultItem };
+        });
     }
 );
 
@@ -79,37 +84,6 @@ watch(
         }
     }
 );
-
-const handleCancel = () => {
-    localDialogVisible.value = false;
-    editedItem.value = { ...defaultItem };
-    emit('close');
-};
-
-const handleSubmit = async (itemToSubmit) => {
-    resetErrors();
-    isLoading.value = true;
-    try {
-        if (props.editedIndex > -1) {
-            await companyStore.update(props.editedIndex, itemToSubmit);
-            toast.success('You have successfully edited the item!');
-        } else {
-            await companyStore.store(itemToSubmit)
-            toast.success('You have successfully created a new item!');
-        }
-        localDialogVisible.value = false;
-        editedItem.value = { ...defaultItem };
-        emit('close');
-    }
-    catch(error) {
-        handleApiError(error);
-        toast.error(error.response.data.message);
-    }
-    finally {
-        isLoading.value = false;
-    }
-};
-
 
 const fields = computed(() => [
     { model: 'name', component: 'v-text-field', props: { label: 'Name', error: !!formErrors.value.name, 'error-messages': formErrors.value.name || [] } },

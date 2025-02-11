@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
 import DialogDeleteComponent from '@/components/dialogs/DialogDeleteComponent.vue'
 import ToggleHeaderComponent from '@/components/ToggleHeaderComponent.vue'
 import { useDisplay } from 'vuetify'
@@ -169,6 +169,10 @@ const tableParams = reactive({
     additionalFilters: {},
 });
 
+watch(filterIsActive, () => {
+    loadItems();
+});
+
 const loadItems = async (params) => {
 
     tableLoadingItems.value = true;
@@ -176,8 +180,6 @@ const loadItems = async (params) => {
     Object.assign(tableParams, params);
 
     const filters = {};
-
-    filters.active = ['none'];
 
     if (filterIsActive.value.length) {
         filters.active = filterIsActive.value;

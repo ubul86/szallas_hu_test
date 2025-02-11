@@ -37,7 +37,7 @@ class ElasticsearchQueryBuilder
     {
         return $this->body([
             'query' => ['match_all' => (object)[]]
-        ]);
+        ], true);
     }
 
     public function match(string $field, string $value): self
@@ -130,11 +130,17 @@ class ElasticsearchQueryBuilder
         return $this->query;
     }
 
-    public function body(array $body): self
+    public function body(array $body, bool $replaceQuery = false): self
     {
-        $this->query['body'] = array_merge_recursive($this->query['body'] ?? [], $body);
+        if ($replaceQuery && isset($body['query'])) {
+            $this->query['body']['query'] = $body['query'];
+        } else {
+            $this->query['body'] = array_merge_recursive($this->query['body'] ?? [], $body);
+        }
+
         return $this;
     }
+
 
     public function id(int $id): self
     {

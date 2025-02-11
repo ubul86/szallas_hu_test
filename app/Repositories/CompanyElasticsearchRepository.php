@@ -45,23 +45,78 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
 
         $this->queryBuilder->index('companies');
 
+        $mustConditions = [];
+        $filterConditions = [];
+
+        if (!empty($filters['search'])) {
+            $mustConditions[] = [
+                'wildcard' => [
+                    'name' => [
+                        'value' => '*' . $filters['search'] . '*',
+                        'boost' => 1.0,
+                        'rewrite' => 'constant_score'
+                    ]
+                ]
+            ];
+        }
+
+        if (!empty($filters['filters']) && is_array($filters['filters'])) {
+            foreach ($filters['filters'] as $field => $values) {
+                if (!is_array($values)) {
+                    $values = [$values];
+                }
+
+                if ($field === 'active') {
+                    $values = array_map(fn($value) => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE), $values);
+                }
+
+                $filterConditions[] = [
+                    'terms' => [
+                        $field => $values
+                    ]
+                ];
+            }
+        }
+
         if (!empty($filters['ids'])) {
             $ids = explode(',', $filters['ids']);
+            $mustConditions[] = [
+                'terms' => [
+                    '_id' => $ids
+                ]
+            ];
+        }
+
+        if (empty($mustConditions) && empty($filterConditions)) {
             $this->queryBuilder->body([
                 'query' => [
-                    'terms' => [
-                        '_id' => $ids
-                    ]
+                    'match_all' => new \stdClass()
                 ]
             ]);
         } else {
-            $this->queryBuilder->matchAll();
+            $this->queryBuilder->body([
+                'query' => [
+                    'bool' => [
+                        'must' => $mustConditions,
+                        'filter' => $filterConditions
+                    ]
+                ]
+            ]);
         }
 
-        $response = $this->queryBuilder
+        $this->queryBuilder
             ->from($from)
-            ->size($perPage)
-            ->execute();
+            ->size($perPage);
+
+        if (!empty($filters['sortBy']) && is_array($filters['sortBy'])) {
+            foreach ($filters['sortBy'] as $sort) {
+                if (!empty($sort['key']) && !empty($sort['order'])) {
+                    $this->queryBuilder->sort($sort['key'], $sort['order']);
+                }
+            }
+        }
+
+        $response = $this->queryBuilder->execute();
 
         $companies = (new Collection($response['hits']))->map(fn($hit) => $hit['_source']);
         $total = $response['total']['value'];

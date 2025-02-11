@@ -9,11 +9,10 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-        <link href="{{ asset('build/app.css') }}" rel="stylesheet">
         <link href="{{ asset('css/main.css') }}" rel="stylesheet">
+        @vite(['resources/js/app.js', 'resources/css/app.css'])
     </head>
     <body class="antialiased">
         <div id="app"></div>
-        <script src="{{ asset('build/app.js') }}"></script>
     </body>
 </html>

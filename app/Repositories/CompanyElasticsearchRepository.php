@@ -45,20 +45,18 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
 
         $this->queryBuilder->index('companies');
 
-        $mustConditions = [];
-        $filterConditions = [];
-
         if (!empty($filters['search'])) {
-            $mustConditions[] = [
-                'wildcard' => [
-                    'name' => [
-                        'value' => '*' . $filters['search'] . '*',
-                        'boost' => 1.0,
-                        'rewrite' => 'constant_score'
-                    ]
-                ]
+            $params = [
+                'boost' => 2.0,
+                'rewrite' => 'constant_score'
             ];
+
+            $this->queryBuilder->searchWithWildcard('name', $filters['search'], $params);
+            $this->queryBuilder->searchWithWildcard('activity', $filters['search']);
+            $this->queryBuilder->searchWithWildcard('registration_number', $filters['search']);
         }
+
+        $processedFilters = [];
 
         if (!empty($filters['filters']) && is_array($filters['filters'])) {
             foreach ($filters['filters'] as $field => $values) {
@@ -70,39 +68,16 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
                     $values = array_map(fn($value) => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE), $values);
                 }
 
-                $filterConditions[] = [
-                    'terms' => [
-                        $field => $values
-                    ]
-                ];
+                $processedFilters[$field] = $values;
             }
         }
 
         if (!empty($filters['ids'])) {
             $ids = explode(',', $filters['ids']);
-            $mustConditions[] = [
-                'terms' => [
-                    '_id' => $ids
-                ]
-            ];
+            $processedFilters['_id'] = $ids;
         }
 
-        if (empty($mustConditions) && empty($filterConditions)) {
-            $this->queryBuilder->body([
-                'query' => [
-                    'match_all' => new \stdClass()
-                ]
-            ]);
-        } else {
-            $this->queryBuilder->body([
-                'query' => [
-                    'bool' => [
-                        'must' => $mustConditions,
-                        'filter' => $filterConditions
-                    ]
-                ]
-            ]);
-        }
+        $this->queryBuilder->applyFilters($processedFilters);
 
         $this->queryBuilder
             ->from($from)
@@ -116,7 +91,7 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
             }
         }
 
-        $response = $this->queryBuilder->execute();
+        $response = $this->queryBuilder->buildQuery()->execute();
 
         $companies = (new Collection($response['hits']))->map(fn($hit) => $hit['_source']);
         $total = $response['total']['value'];

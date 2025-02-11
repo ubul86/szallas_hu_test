@@ -10,6 +10,8 @@ class ElasticsearchQueryBuilder
 {
     protected ElasticClient $elasticsearch;
     protected array $query = [];
+    private array $mustConditions = [];
+    private array $filterConditions = [];
 
     public function __construct(ElasticClient $elasticsearch)
     {
@@ -182,5 +184,59 @@ class ElasticsearchQueryBuilder
         }
 
         return isset($response['hits']['hits']) ? $response['hits']['hits'] : [];
+    }
+
+    private function addMustCondition(array $condition): void
+    {
+        $this->mustConditions[] = $condition;
+    }
+
+    public function searchWithWildcard(string $field, string $value, array $params = []): self
+    {
+        $defaultParams = [
+            'boost' => 1.0,
+            'rewrite' => 'constant_score'
+        ];
+
+        $params = array_merge($defaultParams, $params);
+
+        $wildcardCondition = [
+            'wildcard' => [
+                $field => array_merge(['value' => '*' . $value . '*'], $params)
+            ]
+        ];
+
+        $this->addMustCondition($wildcardCondition);
+
+        return $this;
+    }
+
+
+    private function addFilterCondition(array $condition): void
+    {
+        $this->filterConditions[] = $condition;
+    }
+
+    public function applyFilters(array $filters): self
+    {
+        foreach ($filters as $field => $values) {
+            $this->addFilterCondition([
+                'terms' => [
+                    $field => $values
+                ]
+            ]);
+        }
+        return $this;
+    }
+
+    public function buildQuery(): self
+    {
+        if (empty($this->mustConditions) && empty($this->filterConditions)) {
+            $this->query['body']['query'] = ['match_all' => new \stdClass()];
+        } else {
+            $this->query['body']['query']['bool']['must'][]['bool']['should'] = $this->mustConditions;
+            $this->query['body']['query']['bool']['filter'] = $this->filterConditions;
+        }
+        return $this;
     }
 }

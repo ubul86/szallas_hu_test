@@ -110,7 +110,7 @@ const handleSubmit = async (itemToSubmit) => {
 
 const fields = computed(() => [
     { model: 'name', component: 'v-text-field', props: { label: 'Name', error: !!formErrors.value.name, 'error-messages': formErrors.value.name || [] } },
-    { model: 'city', component: 'v-checkbox', props: { label: 'Active', error: !!formErrors.value.active, 'error-messages': formErrors.value.active || [] } },
+    { model: 'active', component: 'v-checkbox', props: { value: 1, label: 'Active', error: !!formErrors.value.active, 'error-messages': formErrors.value.active || [] } },
 ]);
 
 </script>

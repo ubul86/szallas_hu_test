@@ -49,7 +49,7 @@
                     single-line
                 ></v-text-field>
 
-                <v-btn color="primary" dark v-bind="props" @click="openDialog">New Company</v-btn>
+                <v-btn color="primary" dark @click="openDialog">New Company</v-btn>
 
             </v-toolbar>
         </template>

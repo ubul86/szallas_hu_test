@@ -58,6 +58,7 @@ const handleSubmit = () => {
                                 :is="field.component"
                                 v-model="localFormData[field.model]"
                                 v-bind="field.props"
+                                v-on="field.on"
                             />
                         </v-col>
                     </v-row>

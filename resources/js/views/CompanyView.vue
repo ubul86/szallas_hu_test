@@ -3,6 +3,9 @@
         <v-toolbar color="primary" dark>
             <v-toolbar-title>{{ getCompanyName || 'Loading...' }}</v-toolbar-title>
             <v-spacer></v-spacer>
+            <v-btn icon to="/">
+                <v-icon>mdi-home</v-icon>
+            </v-btn>
         </v-toolbar>
 
         <v-tabs v-model="activeTab" align-tabs="title">

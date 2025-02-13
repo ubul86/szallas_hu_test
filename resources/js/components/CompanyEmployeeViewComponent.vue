@@ -129,7 +129,7 @@ const openDialog = () => {
 
 const onClose = () => {
     dialog.value = false;
-    editedIndex.value = null;
+    editedIndex.value = -1;
     editedItemId.value = null;
 }
 

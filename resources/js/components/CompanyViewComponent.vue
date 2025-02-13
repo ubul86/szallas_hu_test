@@ -57,7 +57,7 @@ const onEditClick = () => {
 };
 
 const onClose = () => {
-    editedIndex.value = null;
+    editedIndex.value = -1;
     dialogVisible.value = false;
 }
 

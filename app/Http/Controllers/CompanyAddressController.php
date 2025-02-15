@@ -5,14 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyAddressRequest;
 use App\Http\Requests\UpdateCompanyAddressRequest;
 use App\Models\Company;
+use App\Models\CompanyAddress;
 use App\Services\CompanyAddressService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Traits\FormatsMeta;
+use App\Traits\HandleJsonResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Exception;
 
 class CompanyAddressController extends Controller
 {
+    use HandleJsonResponse;
+
+    /** @use FormatsMeta<CompanyAddress> */
+    use FormatsMeta;
+
     protected CompanyAddressService $companyAddressService;
 
     public function __construct(CompanyAddressService $companyAddressService)
@@ -22,16 +29,16 @@ class CompanyAddressController extends Controller
 
     public function index(Request $request, Company $company): JsonResponse
     {
-        $models = $this->companyAddressService->index($company->id, $request->all());
-        return response()->json([
-            'items' => $models->items(),
-            'meta' => [
-                'current_page' => $models->currentPage(),
-                'total_pages' => $models->lastPage(),
-                'total_items' => $models->total(),
-                'items_per_page' => $models->perPage(),
-            ],
-        ]);
+        try {
+            $models = $this->companyAddressService->index($company->id, $request->all());
+
+            return $this->successResponse([
+                'items' => $models->items(),
+                'meta' => $this->formatMeta($models),
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e);
+        }
     }
 
     public function store(Company $company, StoreCompanyAddressRequest $request): JsonResponse
@@ -39,9 +46,9 @@ class CompanyAddressController extends Controller
         try {
             $validated = $request->validated();
             $companyAddress = $this->companyAddressService->store($company->id, $validated);
-            return response()->json($companyAddress, 201);
+            return $this->successResponse($companyAddress, 201);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+            return $this->errorResponse($e);
         }
     }
 
@@ -49,9 +56,9 @@ class CompanyAddressController extends Controller
     {
         try {
             $companyAddress = $this->companyAddressService->show($company->id, $id);
-            return response()->json($companyAddress);
+            return $this->successResponse($companyAddress);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->errorResponse($e);
         }
     }
 
@@ -60,11 +67,9 @@ class CompanyAddressController extends Controller
         try {
             $validated = $request->validated();
             $companyAddress = $this->companyAddressService->update($company->id, $id, $validated);
-            return response()->json($companyAddress);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->successResponse($companyAddress);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+            return $this->errorResponse($e);
         }
     }
 
@@ -72,11 +77,9 @@ class CompanyAddressController extends Controller
     {
         try {
             $this->companyAddressService->destroy($company->id, $id);
-            return response()->json(['message' => 'Company Address deleted successfully']);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->successResponse(['message' => 'Company Address deleted successfully']);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->errorResponse($e);
         }
     }
 }

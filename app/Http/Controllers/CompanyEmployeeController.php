@@ -5,14 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyEmployeeRequest;
 use App\Http\Requests\UpdateCompanyEmployeeRequest;
 use App\Models\Company;
+use App\Models\CompanyEmployee;
 use App\Services\CompanyEmployeeService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Traits\FormatsMeta;
+use App\Traits\HandleJsonResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Exception;
 
 class CompanyEmployeeController extends Controller
 {
+    use HandleJsonResponse;
+
+    /** @use FormatsMeta<CompanyEmployee> */
+    use FormatsMeta;
+
     protected CompanyEmployeeService $companyEmployeeService;
 
     public function __construct(CompanyEmployeeService $companyEmployeeService)
@@ -22,16 +29,16 @@ class CompanyEmployeeController extends Controller
 
     public function index(Request $request, Company $company): JsonResponse
     {
-        $models = $this->companyEmployeeService->index($company->id, $request->all());
-        return response()->json([
-            'items' => $models->items(),
-            'meta' => [
-                'current_page' => $models->currentPage(),
-                'total_pages' => $models->lastPage(),
-                'total_items' => $models->total(),
-                'items_per_page' => $models->perPage(),
-            ],
-        ]);
+        try {
+            $models = $this->companyEmployeeService->index($company->id, $request->all());
+
+            return $this->successResponse([
+                'items' => $models->items(),
+                'meta' => $this->formatMeta($models),
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e);
+        }
     }
 
     public function store(Company $company, StoreCompanyEmployeeRequest $request): JsonResponse
@@ -39,9 +46,9 @@ class CompanyEmployeeController extends Controller
         try {
             $validated = $request->validated();
             $companyEmployee = $this->companyEmployeeService->store($company->id, $validated);
-            return response()->json($companyEmployee, 201);
+            return $this->successResponse($companyEmployee, 201);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+            return $this->errorResponse($e);
         }
     }
 
@@ -49,9 +56,9 @@ class CompanyEmployeeController extends Controller
     {
         try {
             $companyEmployee = $this->companyEmployeeService->show($company->id, $id);
-            return response()->json($companyEmployee);
+            return $this->successResponse($companyEmployee);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->errorResponse($e);
         }
     }
 
@@ -60,11 +67,9 @@ class CompanyEmployeeController extends Controller
         try {
             $validated = $request->validated();
             $companyEmployee = $this->companyEmployeeService->update($company->id, $id, $validated);
-            return response()->json($companyEmployee);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->successResponse($companyEmployee);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+            return $this->errorResponse($e);
         }
     }
 
@@ -72,11 +77,9 @@ class CompanyEmployeeController extends Controller
     {
         try {
             $this->companyEmployeeService->destroy($company->id, $id);
-            return response()->json(['message' => 'Company Employee deleted successfully']);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->successResponse(['message' => 'Company Employee deleted successfully']);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->errorResponse($e);
         }
     }
 }

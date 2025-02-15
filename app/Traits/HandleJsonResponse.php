@@ -10,7 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 trait HandleJsonResponse
 {
-    protected function successResponse(array|JsonResource $data, int $status = 200): JsonResponse
+    protected function successResponse(mixed $data, int $status = 200): JsonResponse
     {
         return response()->json($data, $status);
     }

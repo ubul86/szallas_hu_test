@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyOwnerRequest;
 use App\Http\Requests\UpdateCompanyOwnerRequest;
 use App\Models\Company;
+use App\Models\CompanyOwner;
 use App\Services\CompanyOwnerService;
+use App\Traits\FormatsMeta;
+use App\Traits\HandleJsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +16,11 @@ use Exception;
 
 class CompanyOwnerController extends Controller
 {
+    use HandleJsonResponse;
+
+    /** @use FormatsMeta<CompanyOwner> */
+    use FormatsMeta;
+
     protected CompanyOwnerService $companyOwnerService;
 
     public function __construct(CompanyOwnerService $companyOwnerService)
@@ -22,16 +30,16 @@ class CompanyOwnerController extends Controller
 
     public function index(Request $request, Company $company): JsonResponse
     {
-        $models = $this->companyOwnerService->index($company->id, $request->all());
-        return response()->json([
-            'items' => $models->items(),
-            'meta' => [
-                'current_page' => $models->currentPage(),
-                'total_pages' => $models->lastPage(),
-                'total_items' => $models->total(),
-                'items_per_page' => $models->perPage(),
-            ],
-        ]);
+        try {
+            $models = $this->companyOwnerService->index($company->id, $request->all());
+
+            return $this->successResponse([
+                'items' => $models->items(),
+                'meta' => $this->formatMeta($models),
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e);
+        }
     }
 
     public function store(Company $company, StoreCompanyOwnerRequest $request): JsonResponse
@@ -39,9 +47,9 @@ class CompanyOwnerController extends Controller
         try {
             $validated = $request->validated();
             $companyOwner = $this->companyOwnerService->store($company->id, $validated);
-            return response()->json($companyOwner, 201);
+            return $this->successResponse($companyOwner, 201);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+            return $this->errorResponse($e);
         }
     }
 
@@ -49,9 +57,9 @@ class CompanyOwnerController extends Controller
     {
         try {
             $companyOwner = $this->companyOwnerService->show($company->id, $id);
-            return response()->json($companyOwner);
+            return $this->successResponse($companyOwner);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->errorResponse($e);
         }
     }
 
@@ -60,11 +68,9 @@ class CompanyOwnerController extends Controller
         try {
             $validated = $request->validated();
             $companyOwner = $this->companyOwnerService->update($company->id, $id, $validated);
-            return response()->json($companyOwner);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->successResponse($companyOwner);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+            return $this->errorResponse($e);
         }
     }
 
@@ -72,11 +78,9 @@ class CompanyOwnerController extends Controller
     {
         try {
             $this->companyOwnerService->destroy($company->id, $id);
-            return response()->json(['message' => 'Company Owner deleted successfully']);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->successResponse(['message' => 'Company Owner deleted successfully']);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->errorResponse($e);
         }
     }
 }

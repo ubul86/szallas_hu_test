@@ -6,15 +6,24 @@ use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Http\Resources\CompanyResource;
 use App\Services\CompanyService;
+use App\Traits\FormatsMeta;
+use App\Traits\HandleJsonResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Formatters\ElasticsearchFormatter;
+use App\Models\Company;
 
+/**
+ * @template-use FormatsMeta<Company>
+ */
 class CompanyController extends Controller
 {
+    use HandleJsonResponse;
+
+    /** @use FormatsMeta<Company> */
+    use FormatsMeta;
+
     protected CompanyService $companyService;
 
     public function __construct(CompanyService $companyService)
@@ -26,18 +35,13 @@ class CompanyController extends Controller
     {
         try {
             $models = $this->companyService->index($request->all());
-            $formattedModels = array_map([ElasticsearchFormatter::class, 'format'], $models->getCollection()->toArray());
-            return response()->json([
-                'items' => $formattedModels,
-                'meta' => [
-                    'current_page' => $models->currentPage(),
-                    'total_pages' => $models->lastPage(),
-                    'total_items' => $models->total(),
-                    'items_per_page' => $models->perPage(),
-                ],
+
+            return $this->successResponse([
+                'items' => array_map([ElasticsearchFormatter::class, 'format'], $models->getCollection()->toArray()),
+                'meta' => $this->formatMeta($models),
             ]);
-        } catch (NotFoundHttpException $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            return $this->errorResponse($e);
         }
     }
 
@@ -46,19 +50,18 @@ class CompanyController extends Controller
         try {
             $validated = $request->validated();
             $company = $this->companyService->store($validated);
-            return response()->json(new CompanyResource($company), 201);
+            return $this->successResponse(new CompanyResource($company), 201);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+            return $this->errorResponse($e);
         }
     }
 
     public function show(int $id): JsonResponse
     {
         try {
-            $company = $this->companyService->show($id);
-            return response()->json(new CompanyResource($company));
+            return $this->successResponse(new CompanyResource($this->companyService->show($id)));
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->errorResponse($e);
         }
     }
 
@@ -67,11 +70,9 @@ class CompanyController extends Controller
         try {
             $validated = $request->validated();
             $company = $this->companyService->update($id, $validated);
-            return response()->json(new CompanyResource($company));
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->successResponse(new CompanyResource($company));
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 400);
+            return $this->errorResponse($e);
         }
     }
 
@@ -79,11 +80,9 @@ class CompanyController extends Controller
     {
         try {
             $this->companyService->destroy($id);
-            return response()->json(['message' => 'Company deleted successfully']);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->successResponse(['message' => 'Company deleted successfully']);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 404);
+            return $this->errorResponse($e);
         }
     }
 }

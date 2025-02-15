@@ -33,10 +33,6 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
         return $query->execute();
     }
 
-    /**
-     * @param array $filters
-     * @return LengthAwarePaginator<Company>
-     */
     public function index(array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['itemsPerPage'] ?? 10;
@@ -45,51 +41,14 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
 
         $this->queryBuilder->index('companies');
 
-        if (!empty($filters['search'])) {
-            $params = [
-                'boost' => 2.0,
-                'rewrite' => 'constant_score'
-            ];
+        $this->applySearchFilters($filters['search'] ?? null);
 
-            $this->queryBuilder->searchWithWildcard('name', $filters['search'], $params);
-            $this->queryBuilder->searchWithWildcard('activity', $filters['search']);
-            $this->queryBuilder->searchWithWildcard('registration_number', $filters['search']);
-        }
-
-        $processedFilters = [];
-
-        if (!empty($filters['filters']) && is_array($filters['filters'])) {
-            foreach ($filters['filters'] as $field => $values) {
-                if (!is_array($values)) {
-                    $values = [$values];
-                }
-
-                if ($field === 'active') {
-                    $values = array_map(fn($value) => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE), $values);
-                }
-
-                $processedFilters[$field] = $values;
-            }
-        }
-
-        if (!empty($filters['ids'])) {
-            $ids = explode(',', $filters['ids']);
-            $processedFilters['_id'] = $ids;
-        }
-
+        $processedFilters = $this->processFilters($filters);
         $this->queryBuilder->applyFilters($processedFilters);
 
-        $this->queryBuilder
-            ->from($from)
-            ->size($perPage);
+        $this->queryBuilder->from($from)->size($perPage);
 
-        if (!empty($filters['sortBy']) && is_array($filters['sortBy'])) {
-            foreach ($filters['sortBy'] as $sort) {
-                if (!empty($sort['key']) && !empty($sort['order'])) {
-                    $this->queryBuilder->sort($sort['key'], $sort['order']);
-                }
-            }
-        }
+        $this->applySorting($filters['sortBy'] ?? []);
 
         $response = $this->queryBuilder->buildQuery()->execute();
 
@@ -178,5 +137,50 @@ class CompanyElasticsearchRepository implements CompanyElasticsearchRepositoryIn
         return collect($hits)->mapWithKeys(function ($hit) {
             return [$hit['_id'] => $hit['_source']['updated_at']];
         })->toArray();
+    }
+
+    private function applySearchFilters(?string $search): void
+    {
+        if (!$search) {
+            return;
+        }
+
+        $params = ['boost' => 2.0, 'rewrite' => 'constant_score'];
+
+        foreach (['name', 'activity', 'registration_number'] as $field) {
+            $this->queryBuilder->searchWithWildcard($field, $search, $params);
+        }
+    }
+
+    private function processFilters(array $filters): array
+    {
+        $processedFilters = [];
+
+        if (!empty($filters['filters']) && is_array($filters['filters'])) {
+            foreach ($filters['filters'] as $field => $values) {
+                $values = (array) $values;
+
+                if ($field === 'active') {
+                    $values = array_map(fn($value) => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE), $values);
+                }
+
+                $processedFilters[$field] = $values;
+            }
+        }
+
+        if (!empty($filters['ids'])) {
+            $processedFilters['_id'] = explode(',', $filters['ids']);
+        }
+
+        return $processedFilters;
+    }
+
+    private function applySorting(array $sortBy): void
+    {
+        foreach ($sortBy as $sort) {
+            if (!empty($sort['key']) && !empty($sort['order'])) {
+                $this->queryBuilder->sort($sort['key'], $sort['order']);
+            }
+        }
     }
 }
